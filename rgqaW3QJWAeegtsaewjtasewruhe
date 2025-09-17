@@ -149,7 +149,7 @@ a['12'] = Instance.new('Folder', a['4'])
 a['12'].Name = 'Dropdowns'
 a['13'] = Instance.new('Frame', a['2'])
 a['13'].BorderSizePixel = 0
-a['13'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['13'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['13'].ClipsDescendants = true
 a['13'].Size = UDim2.new(0, 165, 1, - 35)
 a['13'].Position = UDim2.new(0, 0, 0, 35)
@@ -163,7 +163,7 @@ a['14'].BorderSizePixel = 0
 a['14'].CanvasSize = UDim2.new(0, 0, 0, 0)
 a['14'].ElasticBehavior = Enum.ElasticBehavior.Never
 a['14'].TopImage = 'rbxasset://textures/ui/Scroll/scroll-middle.png'
-a['14'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['14'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['14'].Name = 'Lists'
 a['14'].Selectable = false
 a['14'].BottomImage = 'rbxasset://textures/ui/Scroll/scroll-middle.png'
@@ -195,9 +195,8 @@ a['18'] = Instance.new('UIGradient', a['17'])
 a['18'].Enabled = false
 a['18'].Rotation = 90
 a['18'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(110, 212, 255)),
-    ColorSequenceKeypoint.new(0.978, Color3.fromRGB(0, 124, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 218, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['19'] = Instance.new('UICorner', a['17'])
 a['19'].CornerRadius = UDim.new(0, 100)
@@ -290,13 +289,13 @@ a['25'] = Instance.new('UICorner', a['13'])
 a['25'].CornerRadius = UDim.new(0, 6)
 a['26'] = Instance.new('Frame', a['13'])
 a['26'].BorderSizePixel = 0
-a['26'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['26'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['26'].Size = UDim2.new(1, 0, 0, 5)
 a['26'].BorderColor3 = Color3.fromRGB(0, 0, 0)
 a['26'].Name = 'AntiCornerTop'
 a['27'] = Instance.new('Frame', a['13'])
 a['27'].BorderSizePixel = 0
-a['27'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['27'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['27'].AnchorPoint = Vector2.new(0.5, 0)
 a['27'].Size = UDim2.new(0, 2, 1, 0)
 a['27'].Position = UDim2.new(1, 1, 0, 0)
@@ -313,7 +312,7 @@ a['28'].BorderColor3 = Color3.fromRGB(0, 0, 0)
 a['28'].Name = 'Border'
 a['29'] = Instance.new('Frame', a['2'])
 a['29'].BorderSizePixel = 0
-a['29'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['29'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['29'].ClipsDescendants = true
 a['29'].Size = UDim2.new(1, 0, 0, 35)
 a['29'].BorderColor3 = Color3.fromRGB(61, 61, 75)
@@ -632,32 +631,32 @@ a['53'].AutomaticSize = Enum.AutomaticSize.Y
 a['53'].Name = 'Description'
 a['54'] = Instance.new('UIGradient', a['4e'])
 a['54'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['55'] = Instance.new('UIGradient', a['4e'])
 a['55'].Enabled = false
 a['55'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
     ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['56'] = Instance.new('UIGradient', a['4e'])
 a['56'].Enabled = false
 a['56'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['57'] = Instance.new('UICorner', a['4e'])
 a['57'].CornerRadius = UDim.new(0, 6)
@@ -819,7 +818,7 @@ a['6c'].PaddingBottom = UDim.new(0, 2)
 a['6d'] = Instance.new('Frame', a['41'])
 a['6d'].Visible = false
 a['6d'].BorderSizePixel = 0
-a['6d'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['6d'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['6d'].AnchorPoint = Vector2.new(0.5, 0.5)
 a['6d'].AutomaticSize = Enum.AutomaticSize.Y
 a['6d'].Size = UDim2.new(1, 0, 0, 65)
@@ -830,7 +829,7 @@ a['6d'].BackgroundTransparency = 1
 a['6e'] = Instance.new('CanvasGroup', a['6d'])
 a['6e'].ZIndex = 2
 a['6e'].BorderSizePixel = 0
-a['6e'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['6e'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['6e'].AutomaticSize = Enum.AutomaticSize.Y
 a['6e'].Size = UDim2.new(0, 265, 0, 70)
 a['6e'].BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -872,8 +871,8 @@ a['73'] = Instance.new('UIGradient', a['72'])
 a['73'].Enabled = false
 a['73'].Rotation = - 90
 a['73'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(3, 100, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 226))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 80)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 120, 120))
 }
 a['74'] = Instance.new('TextLabel', a['6f'])
 a['74'].TextWrapped = true
@@ -938,8 +937,8 @@ a['7b'] = Instance.new('UIGradient', a['7a'])
 a['7b'].Enabled = false
 a['7b'].Rotation = - 90
 a['7b'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(3, 100, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 255, 226))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(80, 80, 80)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(120, 120, 120))
 }
 a['7c'] = Instance.new('Frame', a['6e'])
 a['7c'].BorderSizePixel = 0
@@ -1111,31 +1110,31 @@ a['95'].CornerRadius = UDim.new(0, 4)
 a['96'] = Instance.new('UIGradient', a['94'])
 a['96'].Enabled = false
 a['96'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
     ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['97'] = Instance.new('UIGradient', a['94'])
 a['97'].Enabled = false
 a['97'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['98'] = Instance.new('UIGradient', a['94'])
 a['98'].Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a['99'] = Instance.new('TextLabel', a['8a'])
 a['99'].TextWrapped = true
@@ -1409,32 +1408,32 @@ a.b8.Name = 'Description'
 a.b9 = Instance.new('UIGradient', a.a9)
 a.b9.Enabled = false
 a.b9.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.ba = Instance.new('UIGradient', a.a9)
 a.ba.Enabled = false
 a.ba.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.bb = Instance.new('UIGradient', a.a9)
 a.bb.Enabled = false
 a.bb.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
     ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.bc = Instance.new('Folder', a['41'])
 a.bc.Name = 'DropdownList'
@@ -1552,32 +1551,32 @@ a.c9.AutomaticSize = Enum.AutomaticSize.Y
 a.c9.Name = 'Description'
 a.ca = Instance.new('UIGradient', a.c5)
 a.ca.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.cb = Instance.new('UIGradient', a.c5)
 a.cb.Enabled = false
 a.cb.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
     ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.cc = Instance.new('UIGradient', a.c5)
 a.cc.Enabled = false
 a.cc.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.cd = Instance.new('UICorner', a.c5)
 a.cd.CornerRadius = UDim.new(0, 6)
@@ -1721,12 +1720,12 @@ a.de.Name = 'Description'
 a.df = Instance.new('UIGradient', a.d7)
 a.df.Enabled = false
 a.df.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.e0 = Instance.new('UIGradient', a.d7)
 a.e0.Enabled = false
@@ -1735,22 +1734,22 @@ a.e0.Transparency = NumberSequence.new{
     NumberSequenceKeypoint.new(1, 1)
 }
 a.e0.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.16, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 5, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(0.782, Color3.fromRGB(20, 20, 20)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.e1 = Instance.new('UIGradient', a.d7)
 a.e1.Enabled = false
 a.e1.Color = ColorSequence.new{
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 158, 255)),
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 100, 100)),
     ColorSequenceKeypoint.new(0.16, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(0, 158, 255)),
-    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(0, 5, 255)),
+    ColorSequenceKeypoint.new(0.32, Color3.fromRGB(100, 100, 100)),
+    ColorSequenceKeypoint.new(0.54, Color3.fromRGB(20, 20, 20)),
     ColorSequenceKeypoint.new(0.782, Color3.fromRGB(0, 235, 255)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 158, 255))
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 100, 100))
 }
 a.e2 = Instance.new('UIStroke', a.d7)
 a.e2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
@@ -1981,7 +1980,7 @@ a['105'] = Instance.new('Frame', a['1'])
 a['105'].Visible = false
 a['105'].ZIndex = 0
 a['105'].BorderSizePixel = 2
-a['105'].BackgroundColor3 = Color3.fromRGB(16, 76, 218)
+a['105'].BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 a['105'].AnchorPoint = Vector2.new(0.5, 0.5)
 a['105'].ClipsDescendants = true
 a['105'].AutomaticSize = Enum.AutomaticSize.X
