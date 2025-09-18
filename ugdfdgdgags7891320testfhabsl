@@ -946,8 +946,8 @@ local FriendSection = Tabs.Main:AddSection("Friend Tools")
 -- STATE
 ----------------------------------------------------------------------
 local SelectedFriendLabel = nil
-local PlayerLabels = {}
-local LabelToPlayer = {}
+local PlayerLabels = {}     -- JANGAN diganti referensinya
+local LabelToPlayer = {}    -- JANGAN diganti referensinya
 autoAddEnabled = false
 autoAddConn = nil
 
@@ -958,9 +958,17 @@ local function buildPlayerLabel(p)
     return string.format("%s (@%s)", p.DisplayName or p.Name, p.Name)
 end
 
+local function clearArray(t)
+    for i = #t, 1, -1 do t[i] = nil end
+end
+local function clearMap(t)
+    for k in pairs(t) do t[k] = nil end
+end
+
 local function refreshPlayerList()
-    PlayerLabels = {}
-    LabelToPlayer = {}
+    -- ✨ clear in-place (tabelnya tetap sama referensinya)
+    clearArray(PlayerLabels)
+    clearMap(LabelToPlayer)
 
     for _, p in ipairs(Players:GetPlayers()) do
         if p ~= LocalPlayer then
@@ -969,17 +977,26 @@ local function refreshPlayerList()
             LabelToPlayer[label] = p
         end
     end
+    -- kalau lib kamu punya API untuk update dropdown, panggil di tempat lain
 end
 
 local function sendFriendRequestTo(player)
     if not player or player == LocalPlayer then
         return false, "invalid"
     end
-    local okFriend, already = pcall(function()
-        return LocalPlayer:IsFriendsWith(player.UserId)
-    end)
-    if okFriend and already then
+    -- cek method ada dulu biar gak call nil
+    local already = false
+    if LocalPlayer.IsFriendsWith then
+        local okFriend, res = pcall(function()
+            return LocalPlayer:IsFriendsWith(player.UserId)
+        end)
+        already = okFriend and res or false
+    end
+    if already then
         return false, "already-friends"
+    end
+    if not LocalPlayer.RequestFriendship then
+        return false, "no-request-method"
     end
     local ok, err = pcall(function()
         LocalPlayer:RequestFriendship(player)
@@ -988,11 +1005,11 @@ local function sendFriendRequestTo(player)
 end
 
 ----------------------------------------------------------------------
--- DROPDOWN
+-- DROPDOWN (pakai referensi PlayerLabels yang TETAP)
 ----------------------------------------------------------------------
 FriendSection:AddDropdown("FriendSelectPlayer", {
     Title   = "Select Player",
-    Values  = PlayerLabels,
+    Values  = PlayerLabels,   -- ini tetap valid karena kita clear in-place
     Multi   = false,
     Default = 1,
     Callback = function(label)
@@ -1000,6 +1017,7 @@ FriendSection:AddDropdown("FriendSelectPlayer", {
     end
 })
 
+-- isi awal + refresh saat join/leave
 refreshPlayerList()
 Players.PlayerAdded:Connect(refreshPlayerList)
 Players.PlayerRemoving:Connect(refreshPlayerList)
@@ -1027,7 +1045,10 @@ FriendSection:AddToggle("AddPlayerOnce", {
             if ok then
                 pcall(NotifyHub, "Friend request sent to "..buildPlayerLabel(target))
             else
-                local msg = (err == "already-friends") and "Already friends" or ("Failed: "..tostring(err))
+                local msg =
+                    (err == "already-friends"     and "Already friends")
+                 or (err == "no-request-method" and "RequestFriendship not available in this game")
+                 or ("Failed: "..tostring(err))
                 pcall(NotifyHub, msg)
             end
         end
@@ -1035,7 +1056,7 @@ FriendSection:AddToggle("AddPlayerOnce", {
 })
 
 ----------------------------------------------------------------------
--- TOGGLE: AUTO ADD ALL PLAYERS
+-- TOGGLE: AUTO ADD ALL PLAYERS (persist)
 ----------------------------------------------------------------------
 FriendSection:AddToggle("AutoAddAllPlayers", {
     Title       = "Auto Add Player",
@@ -1056,19 +1077,18 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
                 pcall(NotifyHub, "Auto Add Player enabled.")
             end
 
-            -- hook player baru
+            -- auto add player baru
             if not autoAddConn then
                 autoAddConn = Players.PlayerAdded:Connect(function(p)
                     if autoAddEnabled and p ~= LocalPlayer then
                         sendFriendRequestTo(p)
                         if typeof(NotifyHub) == "function" then
-                            pcall(NotifyHub, "Auto added "..p.DisplayName)
+                            pcall(NotifyHub, "Auto added "..(p.DisplayName or p.Name))
                         end
                     end
                 end)
             end
         else
-            -- OFF → disconnect listener
             if autoAddConn then
                 autoAddConn:Disconnect()
                 autoAddConn = nil
