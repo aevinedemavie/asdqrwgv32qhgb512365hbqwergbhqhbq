@@ -8,15 +8,11 @@ G.__LimitHub_Running = true
 local Library, SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/jamalarap61/Mslspakwnendlsowjnssoaknana/main/wnsoaowknswlwksnwmk.lua"))()
 local CONFIG_PATH = "LimitHub/FishIT/config/FishIT.json"
 
--- ===== services/locals =====
 local Players            = game:GetService("Players")
 local LocalPlayer        = Players.LocalPlayer
 local HttpService        = game:GetService("HttpService")
 local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 
--- =======================================================================
--- UI Window
--- =======================================================================
 local function gradient(text, startColor, endColor)
     local result, length = "", #text
     for i = 1, length do
@@ -54,9 +50,6 @@ local function NotifyHub(text)
     end)
 end
 
--- =======================================================================
--- Webhook Option
--- =======================================================================
 local WebhookState = { url = "", enabled = false }
 
 local WebhookTab     = Window:AddTab({ Title = "Webhook", Icon = "link" })
@@ -72,7 +65,6 @@ WebhookSection:AddInput("WebhookURL", {
     end
 })
 
--- ====== Filter Rarity utk Webhook (fix multi-select) ======
 WebhookState.rarityFilter = {}
 WebhookState._raritySet   = {}
 
@@ -173,7 +165,6 @@ local function sendWebhookEmbed(title, fields, state)
     end)
 end
 
--- === API wrapper (dipakai SendFishPublic)
 local function LRM_SEND_WEBHOOK(url, payload)
     local req = (syn and syn.request) or (http and http.request) or http_request or request
     if not (req and type(url)=="string" and #url>0) then return end
@@ -267,7 +258,6 @@ local function _thumbFromAssetId(assetStr)
     return nil
 end
 
--- Cari ModuleScript item by Data.Name
 local function findItemModule(fishDisplayName)
     local Items = ReplicatedStorage:FindFirstChild("Items")
     if not Items then return nil, nil end
@@ -288,9 +278,8 @@ local function findItemModule(fishDisplayName)
     return nil, nil
 end
 
-local _fishCache = {}  -- key: norm(name) -> {name, rarity, tier, sellPrice, chance, iconUrl}
+local _fishCache = {}
 
--- ==== SellPrice dari ROOT module (modTable.SellPrice) ====
 local function resolveFishInfoByName(name)
     if not name or name=="" then return nil end
     local key = _norm(name)
@@ -339,9 +328,6 @@ end
 
 local AUTHOR_ICON = "https://cdn.discordapp.com/attachments/1412614172302381106/1412899628629758122/B43515AA-FBA7-4D37-B830-5C531B5A0158.png?ex=68b9f8d1&is=68b8a751&hm=8fe9bfd14168ce1f09becd02b388734f2a257f726afbde62ecc9a9f18d0e7c2e"
 
--- =======================================================================
--- Player Stats (counter by CATCH only) + rarity grouping + mutation-aware
--- =======================================================================
 local Stats = { counts = {}, dirty = false }
 
 local function Stats_Add(name, n)
@@ -505,7 +491,6 @@ task.spawn(function()
     end
 end)
 
--- === API kamu (webhook pribadi) - auto icon dari rbxasset
 local function SendFishPublic(Name, Rarity, Sell, Weight)
     local base    = baseNameForRarity(Name)
     local info    = resolveFishInfoByName(base)
@@ -534,9 +519,6 @@ local function SendFishPublic(Name, Rarity, Sell, Weight)
     )
 end
 
--- =======================================================================
--- Sending catch webhook (thumbnail + Sell Price) + PRIVATE hook on Secret
--- =======================================================================
 local function sendCatchEmbedOnce(fishName, oddsText, weightNumber)
     local displayName = tostring(fishName or "")
     local base = baseNameForRarity(displayName)
@@ -589,17 +571,13 @@ local function sendCatchEmbedOnce(fishName, oddsText, weightNumber)
         })
     end)
 
-    -- Hanya kirim ke webhook pribadi kalau Secret (tier 7)
-    local isSecret = (info and ((info.tier == 1) or (tostring(info.rarity or ""):lower() == "common"))) or false 
+    local isSecret = (info and ((info.tier == 1) or (tostring(info.rarity or ""):lower() == "common"))) or false
     if isSecret then
         local sellStr   = (info and info.sellPrice) and tostring(info.sellPrice) or "—"
         local weightStr = weightNumber and string.format("%.2f kg", weightNumber) or "—"
         SendFishPublic(displayName, "Secret", sellStr, weightStr)
     end
 end
--- =======================================================================
--- AUTO FISH, SELL, PLAYER, SHOP, ISLANDS, NPC, SETTINGS
--- =======================================================================
 
 local VirtualUser = game:GetService("VirtualUser")
 
@@ -834,7 +812,6 @@ FarmSection:AddToggle("AutoFishing v2", {
     end
 })
 
--- ====== SELL ALL button (fix path RF/SellAllItems) ======
     local function captureBasis(cf)
         return { position = cf.Position, rightVector = cf.RightVector, upVector = cf.UpVector, lookVector = cf.LookVector, cframe = cf }
     end
@@ -862,7 +839,7 @@ FarmSection:AddButton({
             hrp.CFrame = CFrame.new(sellerPos + Vector3.new(0, 0, 0))
             task.wait(0.5)
             pcall(function() sellRemote:InvokeServer() end)
-            -- reset statistik agar sinkron setelah jual
+
             Stats_Reset()
             NotifyHub("Sold all fishes & reset local stats")
             hrp.CFrame = CFrame.new(originalPos + Vector3.new(0, 0, 0))
@@ -871,15 +848,10 @@ FarmSection:AddButton({
 })
 
 local GuideSection = Tabs.Main:AddSection("Auto Guide")
-----------------------------------------------------------------------
--- FIXED POSISI TARGET
-----------------------------------------------------------------------
-local COIN_POS          = Vector3.new(-553.60, 18.03, 116.94)     -- ganti sesuai pos Coin
-local ENCHANT_STONE_POS = Vector3.new(-2112.59, 6.41, 3804.57)    -- ganti sesuai pos Enchant Stone
 
-----------------------------------------------------------------------
--- HELPER: TELEPORT
-----------------------------------------------------------------------
+local COIN_POS          = Vector3.new(-553.60, 18.03, 116.94)
+local ENCHANT_STONE_POS = Vector3.new(-2112.59, 6.41, 3804.57)
+
 local function getHRP()
     local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
     return char and char:FindFirstChild("HumanoidRootPart")
@@ -894,9 +866,6 @@ local function tpTo(pos)
     end)
 end
 
-----------------------------------------------------------------------
--- UI: DROPDOWN + TOGGLE
-----------------------------------------------------------------------
 local selectedPriority = "Coin"
 
 GuideSection:AddDropdown("SelectPriority", {
@@ -934,26 +903,17 @@ GuideSection:AddToggle("TeleportPriority", {
     end
 })
 
-----------------------------------------------------------------------
--- FRIEND TOOLS SECTION
-----------------------------------------------------------------------
 local Players     = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
 local FriendSection = Tabs.Main:AddSection("Friend Tools")
 
-----------------------------------------------------------------------
--- STATE
-----------------------------------------------------------------------
 local SelectedFriendLabel = nil
-local PlayerLabels = {}     -- JANGAN diganti referensinya
-local LabelToPlayer = {}    -- JANGAN diganti referensinya
+local PlayerLabels = {}
+local LabelToPlayer = {}
 autoAddEnabled = false
 autoAddConn = nil
 
-----------------------------------------------------------------------
--- HELPERS
-----------------------------------------------------------------------
 local function buildPlayerLabel(p)
     return string.format("%s (@%s)", p.DisplayName or p.Name, p.Name)
 end
@@ -966,7 +926,7 @@ local function clearMap(t)
 end
 
 local function refreshPlayerList()
-    -- ✨ clear in-place (tabelnya tetap sama referensinya)
+
     clearArray(PlayerLabels)
     clearMap(LabelToPlayer)
 
@@ -977,14 +937,14 @@ local function refreshPlayerList()
             LabelToPlayer[label] = p
         end
     end
-    -- kalau lib kamu punya API untuk update dropdown, panggil di tempat lain
+
 end
 
 local function sendFriendRequestTo(player)
     if not player or player == LocalPlayer then
         return false, "invalid"
     end
-    -- cek method ada dulu biar gak call nil
+
     local already = false
     if LocalPlayer.IsFriendsWith then
         local okFriend, res = pcall(function()
@@ -1004,12 +964,9 @@ local function sendFriendRequestTo(player)
     return ok, err
 end
 
-----------------------------------------------------------------------
--- DROPDOWN (pakai referensi PlayerLabels yang TETAP)
-----------------------------------------------------------------------
 FriendSection:AddDropdown("FriendSelectPlayer", {
     Title   = "Select Player",
-    Values  = PlayerLabels,   -- ini tetap valid karena kita clear in-place
+    Values  = PlayerLabels,
     Multi   = false,
     Default = 1,
     Callback = function(label)
@@ -1017,14 +974,10 @@ FriendSection:AddDropdown("FriendSelectPlayer", {
     end
 })
 
--- isi awal + refresh saat join/leave
 refreshPlayerList()
 Players.PlayerAdded:Connect(refreshPlayerList)
 Players.PlayerRemoving:Connect(refreshPlayerList)
 
-----------------------------------------------------------------------
--- TOGGLE: ADD PLAYER (ONCE)
-----------------------------------------------------------------------
 FriendSection:AddToggle("AddPlayerOnce", {
     Title       = "Add Player",
     Description = "Send friend request to selected player",
@@ -1055,9 +1008,6 @@ FriendSection:AddToggle("AddPlayerOnce", {
     end
 })
 
-----------------------------------------------------------------------
--- TOGGLE: AUTO ADD ALL PLAYERS (persist)
-----------------------------------------------------------------------
 FriendSection:AddToggle("AutoAddAllPlayers", {
     Title       = "Auto Add Player",
     Description = "Auto send friend requests to everyone in server",
@@ -1066,7 +1016,7 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
         autoAddEnabled = state
 
         if state then
-            -- add semua player yang sudah ada
+
             for _, p in ipairs(Players:GetPlayers()) do
                 if p ~= LocalPlayer then
                     sendFriendRequestTo(p)
@@ -1077,7 +1027,6 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
                 pcall(NotifyHub, "Auto Add Player enabled.")
             end
 
-            -- auto add player baru
             if not autoAddConn then
                 autoAddConn = Players.PlayerAdded:Connect(function(p)
                     if autoAddEnabled and p ~= LocalPlayer then
@@ -1100,24 +1049,20 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
     end
 })
 
-
 local SellSection = Tabs.Main:AddSection("Auto Sell")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- (opsional) kalau butuh Humanoid:
 local function getHRP()
     local char = (workspace:FindFirstChild("Characters") and workspace.Characters:FindFirstChild(LocalPlayer.Name))
                  or LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     return char and char:FindFirstChild("HumanoidRootPart"), char
 end
 
---// ================== CONFIG ==================
-local SELL_TARGET = 4998  -- ganti 4998 buat real use
+local SELL_TARGET = 4998
 local sellerPos   = Vector3.new(50, 17, 2867)
 
---// ================== UI READ: BAG COUNT ==================
 local function getCurrentCount()
     local gui = LocalPlayer:FindFirstChild("PlayerGui"); if not gui then return nil end
     local bp  = gui:FindFirstChild("Backpack") or gui:FindFirstChild("BackpackGui") or gui:FindFirstChild("Inventory")
@@ -1129,11 +1074,10 @@ local function getCurrentCount()
     return cur and tonumber(cur) or nil
 end
 
---// ================== BASIS SAVE/RESTORE ==================
 local function captureBasis(cf)
     return {
-        cf    = cf,                  -- simpan cf utuh (paling aman)
-        pos   = cf.Position,         -- data tambahan (fallback)
+        cf    = cf,
+        pos   = cf.Position,
         right = cf.RightVector,
         up    = cf.UpVector,
         look  = cf.LookVector,
@@ -1146,28 +1090,26 @@ local function restoreFromBasis(hrp, basis)
     if basis.cf then
         hrp.CFrame = basis.cf
     else
-        -- fallback: rebuild matrix (ingat z = -look)
+
         local right = basis.right.Unit
         local up    = (basis.up - right * basis.up:Dot(right)).Unit
         local z     = (-basis.look - right * (-basis.look):Dot(right) - up * (-basis.look):Dot(up)).Unit
         hrp.CFrame  = CFrame.fromMatrix(basis.pos, right, up, z)
     end
 
-    -- nolkan velocity biar gak mental
     pcall(function()
         hrp.AssemblyLinearVelocity  = Vector3.zero
         hrp.AssemblyAngularVelocity = Vector3.zero
     end)
 end
 
---// ================== REMOTE RESOLVER (GUARD) ==================
 local function resolveSellRemote()
-    -- prioritas: variable global 'net' kalau ada
+
     if typeof(net) == "Instance" and net.FindFirstChild then
         local rf = net:FindFirstChild("RF/SellAllItems") or net:FindFirstChild("SellAllItems") or net:FindFirstChild("RF_SellAllItems")
         if rf then return rf end
     end
-    -- fallback cari di ReplicatedStorage kalau struktur game beda
+
     local RS = game:GetService("ReplicatedStorage")
     local candidates = {
         "RF/SellAllItems", "Remotes/RF/SellAllItems",
@@ -1184,12 +1126,10 @@ local function resolveSellRemote()
     return nil
 end
 
---// ================== STATE ==================
 local isSelling = false
 local nextAllowedSellAt = 0
 local autoSellEnabled = false
 
---// ================== TOGGLE ==================
 SellSection:AddToggle("AutoSellFish", {
     Title       = "Auto Sell Fish",
     Description = "Auto sell when backpack full",
@@ -1212,24 +1152,20 @@ SellSection:AddToggle("AutoSellFish", {
 
                     local hrp, char = getHRP()
                     if hrp then
-                        -- (1) Save basis sebelum teleport
+
                         local savedBasis = captureBasis(hrp.CFrame)
 
-                        -- (2) Teleport ke seller
                         hrp.CFrame = CFrame.new(sellerPos)
 
-                        -- (3) Invoke remote (tunggu dikit biar server register pos)
                         task.wait(0.4)
                         local sellRemote = resolveSellRemote()
                         if sellRemote then
                             pcall(function() sellRemote:InvokeServer() end)
                         end
 
-                        -- optional sinkronisasi lokal
                         if typeof(Stats_Reset)  == "function" then pcall(Stats_Reset) end
                         if typeof(NotifyHub)    == "function" then pcall(NotifyHub, "Sold all fishes & reset local stats") end
 
-                        -- (3b) Tunggu BagSize benar2 turun (atau timeout 3.0s)
                         local startCount = cur
                         local t0 = os.clock()
                         while os.clock() - t0 < 3.0 do
@@ -1240,18 +1176,15 @@ SellSection:AddToggle("AutoSellFish", {
                             task.wait(0.1)
                         end
 
-                        -- (4) Balik ke basis saved
                         task.wait(0.2)
                         restoreFromBasis(hrp, savedBasis)
 
-                        -- (opsional) “kunci” state fisik dikit
                         task.wait(0.05)
                         pcall(function()
                             local hum = char and char:FindFirstChildOfClass("Humanoid")
                             if hum then hum:Move(Vector3.zero) end
                         end)
 
-                        -- (5) Cooldown biar loop gak langsung nyamber lagi
                         nextAllowedSellAt = os.clock() + 1.5
                     end
 
@@ -1264,19 +1197,16 @@ SellSection:AddToggle("AutoSellFish", {
     end
 })
 
--- ================== CUSTOM SELL TARGET (UI) ==================
--- default tetap 4998, bisa diubah lewat input
 SELL_TARGET = SELL_TARGET or 5000
 
--- Input muncul lebih dulu, supaya user set angka sebelum menyalakan toggle
 local okAddInput, errAddInput = pcall(function()
     SellSection:AddInput("SellTargetInput", {
         Title       = "Sell Target",
         Description = "",
         Default     = tostring(SELL_TARGET),
         Placeholder = "mis. 5000",
-        Numeric     = true,     -- beberapa UI lib support flag ini
-        Finished    = true,     -- callback saat user selesai input
+        Numeric     = true,
+        Finished    = true,
         Callback = function(val)
             local n = tonumber(val)
             if n and n >= 1 then
@@ -1294,7 +1224,6 @@ local okAddInput, errAddInput = pcall(function()
 end)
 if not okAddInput then warn("[AutoSell] AddInput failed: " .. tostring(errAddInput)) end
 
--- ================== TOGGLE AUT0 SELL ==================
 SellSection:AddToggle("AutoSellFish", {
     Title       = "Auto Sell Amount",
     Description = "Auto Sell when reach",
@@ -1356,7 +1285,6 @@ SellSection:AddToggle("AutoSellFish", {
     end
 })
 
--- Section Save POS
 local SaveSection = Tabs.Main:AddSection("Save POS")
 
 local function _getHRP()
@@ -1375,7 +1303,6 @@ local AutoInPosEnabled = false
 local NotAtPosSeconds  = 0
 local DIST_TOLERANCE   = 8
 
--- cf ↔ table
 local function cf_to_tbl(cf)
     local x,y,z, r00,r01,r02, r10,r11,r12, r20,r21,r22 = cf:GetComponents()
     return {x=x,y=y,z=z,r00=r00,r01=r01,r02=r02,r10=r10,r11=r11,r12=r12,r20=r20,r21=r21,r22=r22}
@@ -1384,7 +1311,6 @@ local function tbl_to_cf(t)
     return CFrame.new(t.x,t.y,t.z, t.r00,t.r01,t.r02, t.r10,t.r11,t.r12, t.r20,t.r21,t.r22)
 end
 
--- file save
 local SAVE_FILE = "LimitHub/FishIT/saved/positions.json"
 
 local function ensure_dirs()
@@ -1436,7 +1362,6 @@ local function load_saved_positions()
     end
 end
 
--- dropdown
 local PosDropdown = SaveSection:AddDropdown("ListPosDropdown", {
     Title = "List Pos",
     Values = {},
@@ -1464,11 +1389,9 @@ local function RefreshPosDropdown()
     end
 end
 
--- load awal
 load_saved_positions()
 RefreshPosDropdown()
 
--- set default dari file / last save
 if getgenv().__LH_DefaultPos and SavedPos[getgenv().__LH_DefaultPos] then
     SelectedPosName = getgenv().__LH_DefaultPos
 else
@@ -1483,7 +1406,6 @@ if SelectedPosName then
     if PosDropdown.SetValue then PosDropdown:SetValue(SelectedPosName) end
 end
 
--- toggle auto in pos
 SaveSection:AddToggle("AutoInPosToggle", {
     Title = "Auto in Pos",
     Description = "Auto back to pos after 5s",
@@ -1498,7 +1420,6 @@ SaveSection:AddToggle("AutoInPosToggle", {
     end
 })
 
--- loop auto balik
 task.spawn(function()
     while true do
         task.wait(0.5)
@@ -1525,7 +1446,6 @@ task.spawn(function()
     end
 end)
 
--- save pos
 SaveSection:AddButton({
     Title = "Save Pos",
     Description = "Save current position",
@@ -1544,7 +1464,6 @@ SaveSection:AddButton({
     end
 })
 
--- delete pos
 SaveSection:AddButton({
     Title = "Delete Save Pos",
     Description = "Delete selected pos",
@@ -1564,10 +1483,8 @@ SaveSection:AddButton({
     end
 })
 
--- ================== AUTO FAVORITE ==================
 local AutoFavSection = Tabs.Main:AddSection("Auto Favorite")
 
--- Safe require helpers
 local function safeRequire(pathArray)
     local inst = ReplicatedStorage
     for _,name in ipairs(pathArray) do
@@ -1580,12 +1497,10 @@ local function safeRequire(pathArray)
     return nil
 end
 
--- Try require core modules (do not crash if missing)
 local TierUtility       = safeRequire({"Shared","TierUtility"})
 local ItemUtility       = safeRequire({"Shared","ItemUtility"})
 local ItemStringUtility = safeRequire({"Shared","ItemStringUtility"})
 
--- Try find Replion safely (global or from Packages/_Index)
 local Replion = rawget(_G,"Replion") or (getgenv and getgenv().Replion) or nil
 if not Replion then
     local idx = ReplicatedStorage:FindFirstChild("Packages")
@@ -1601,13 +1516,12 @@ if not Replion then
     end
 end
 
--- net & REFavoriteItem
 local net2 = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
 local REFavoriteItem = net2:WaitForChild("RE/FavoriteItem")
 
 local FavState = {
     enabled = false,
-    selected = {},  -- map lowercased rarity -> true
+    selected = {},
     lastRunAt = 0,
     interval = 6,
 }
@@ -1719,7 +1633,6 @@ task.spawn(function()
     end
 end)
 
--- ================= Player Section =================
 local PlayerSection = Tabs.Player:AddSection("Player Features")
 PlayerSection:AddSlider("WalkSpeed", {
     Title = "WalkSpeed", Description = "Adjust walk speed",
@@ -1741,9 +1654,6 @@ PlayerSection:AddSlider("JumpPower", {
     end
 })
 
-
-
--- ================= Anti AFK =================
 local AfkSection = Tabs.Main:AddSection("Anti AFK")
 
 local RS = game:GetService("ReplicatedStorage")
@@ -1797,7 +1707,6 @@ AfkSection:AddToggle("AntiAFKToggle", {
     end
 })
 
--- ================= WEATHER =================
 local WeatherSection = Tabs.Weather:AddSection("Auto Weather")
 
 local __autoWeatherOn = false
@@ -1875,7 +1784,6 @@ WeatherSection:AddToggle("AutoWeatherToggle", {
     end
 })
 
--- ================= ENCHANT =================
 local EnchantSection = Tabs.Enchant:AddSection("Enchant Rod Option")
 
 local ENCHANT_POS = Vector3.new(3258.40, -1300.65, 1386.94)
@@ -1922,9 +1830,6 @@ EnchantSection:AddButton({
     end
 })
 
--- ===================== CLEAN SHOP PANELS (FIXED) =====================
-
--- Single ReplicatedStorage / Net reference (avoid duplicate locals)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Net = ReplicatedStorage
     :WaitForChild("Packages")
@@ -1932,21 +1837,17 @@ local Net = ReplicatedStorage
     :WaitForChild("sleitnick_net@0.2.0")
     :WaitForChild("net")
 
--- Remotes (created once, re-used across sections)
 local PurchaseBaitRF = PurchaseBaitRF or Net:WaitForChild("RF/PurchaseBait")
 local PurchaseRodRF  = PurchaseRodRF  or Net:WaitForChild("RF/PurchaseFishingRod")
 local PurchaseBoatRF = PurchaseBoatRF or Net:WaitForChild("RF/PurchaseBoat")
 local PurchaseGearRF = PurchaseGearRF or Net:WaitForChild("RF/PurchaseGear")
 
--- Global state (single getgenv; do NOT re-declare again)
 local G = (getgenv and getgenv()) or _G
 G.__SelectedBaitId = G.__SelectedBaitId or nil
 G.__SelectedRodId  = G.__SelectedRodId  or nil
 G.__SelectedBoatId = G.__SelectedBoatId or nil
 G.__SelectedItemId = G.__SelectedItemId or nil
 
--- ---------- BOBBERS / BAIT SHOP ----------
--- Fallbacks if not defined earlier
 BaitIds = BaitIds or {
     ["Luck Bait"] = 2,
     ["Midnight Bait"] = 3,
@@ -1994,22 +1895,21 @@ BobberSection:AddButton({
     end
 })
 
--- ---------- ROD SHOP ----------
 local RodSection = Tabs.Shop:AddSection("Rod Shop")
 
 local RodIds = {
-    ["Luck Rod"]      = 79,   -- 350
-    ["Carbon Rod"]    = 76,   -- 900
-    ["Grass Rod"]     = 85,   -- 1.5K
-    ["Demascus Rod"]  = 77,   -- 3K
-    ["Ice Rod"]       = 78,   -- 5K
-    ["Lucky Rod"]     = 4,    -- 15K
-    ["Angler Rod"]    = 168,  -- 8,000K
-    ["Ares Rod"]      = 126,  -- 3,000K
-    ["Astral Rod"]    = 5,    -- 1,000K
-    ["Chrome Pod"]    = 7,    -- 437K
-    ["Midnight Rod"]  = 80,   -- 50K
-    ["Steampunk Rod"] = 6,    -- 215K
+    ["Luck Rod"]      = 79,
+    ["Carbon Rod"]    = 76,
+    ["Grass Rod"]     = 85,
+    ["Demascus Rod"]  = 77,
+    ["Ice Rod"]       = 78,
+    ["Lucky Rod"]     = 4,
+    ["Angler Rod"]    = 168,
+    ["Ares Rod"]      = 126,
+    ["Astral Rod"]    = 5,
+    ["Chrome Pod"]    = 7,
+    ["Midnight Rod"]  = 80,
+    ["Steampunk Rod"] = 6,
 }
 
 local RodList = {
@@ -2047,17 +1947,16 @@ RodSection:AddButton({
     end
 })
 
--- ---------- BOAT SHOP ----------
 local BoatSection = Tabs.Shop:AddSection("Boat Shop")
 
 local BoatIds = {
-    ["Small Boat"]     = 1, -- 300
-    ["Kayak"]          = 2, -- 1.1k
-    ["Jetski"]         = 3, -- 7.5k
-    ["Highfield Boat"] = 4, -- 25k
-    ["Speed Boat"]     = 5, -- 70k
-    ["Fishing Boat"]   = 6, -- 180k
-    ["Mini Yacht"]     = 7, -- 1.20m
+    ["Small Boat"]     = 1,
+    ["Kayak"]          = 2,
+    ["Jetski"]         = 3,
+    ["Highfield Boat"] = 4,
+    ["Speed Boat"]     = 5,
+    ["Fishing Boat"]   = 6,
+    ["Mini Yacht"]     = 7,
 }
 
 local BoatList = {
@@ -2094,7 +1993,6 @@ BoatSection:AddButton({
     end
 })
 
--- ---------- ITEMS SHOP ----------
 local ItemsSection = Tabs.Shop:AddSection("Items Shop")
 
 local ItemIds = {
@@ -2134,7 +2032,6 @@ ItemsSection:AddButton({
     end
 })
 
-
 local IslandsSection = Tabs.Teleport:AddSection("Islands Teleport")
 local islandCoordsList = {
     ["01"]={name="Weather Machine", position=Vector3.new(-1471,-3,1929)},
@@ -2163,12 +2060,12 @@ for _, data in pairs(islandCoordsList) do
         end
     })
 end
--- ================= TELEPORT TO PLAYER (DisplayName) =================
+
 local TPPlayerSection = Tabs.Teleport:AddSection("Teleport to Player")
 
 local SelectedPlayer = nil
 local PlayerDropdown
-local DisplayNameToUser = {} -- mapping DisplayName -> Username
+local DisplayNameToUser = {}
 
 local function RefreshPlayerList()
     local displayNames = {}
@@ -2193,17 +2090,15 @@ local function RefreshPlayerList()
     })
 end
 
--- ==== STATE ====
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local PlayerList = {}             -- list untuk dropdown (DisplayName (@Username))
-local DisplayNameToUser = {}      -- map "Display (@User)" -> "Username"
-local SelectedPlayer = nil        -- string display yang dipilih
+local PlayerList = {}
+local DisplayNameToUser = {}
+local SelectedPlayer = nil
 
-local PlayerDropdown -- simpan handler dropdown biar bisa update nilainya
+local PlayerDropdown
 
--- ==== UTIL ====
 local function getMyHRP()
     local charFolder = workspace:FindFirstChild("Characters")
     local char = (charFolder and charFolder:FindFirstChild(LocalPlayer.Name))
@@ -2212,32 +2107,30 @@ local function getMyHRP()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
--- ==== REFRESH LIST TANPA :Remove() ====
 local function RefreshPlayerList()
-    -- kosongkan dengan cara yang benar
+
     if table.clear then
         table.clear(PlayerList)
         table.clear(DisplayNameToUser)
     else
-        -- fallback kalau environment gak punya table.clear
+
         for k in pairs(PlayerList) do PlayerList[k] = nil end
         for k in pairs(DisplayNameToUser) do DisplayNameToUser[k] = nil end
     end
 
     for _, p in ipairs(Players:GetPlayers()) do
-        -- bikin label yang unik & enak dibaca
+
         local label = string.format("%s (@%s)", p.DisplayName or p.Name, p.Name)
         table.insert(PlayerList, label)
         DisplayNameToUser[label] = p.Name
     end
 
-    -- update dropdown kalau ada
     if PlayerDropdown then
         pcall(function()
             if PlayerDropdown.SetValues then
                 PlayerDropdown:SetValues(PlayerList)
             end
-            -- reset selection kalau player sebelumnya udah gak ada
+
             if SelectedPlayer and not DisplayNameToUser[SelectedPlayer] then
                 SelectedPlayer = nil
                 if PlayerDropdown.SetValue then
@@ -2248,13 +2141,10 @@ local function RefreshPlayerList()
     end
 end
 
--- panggil awal & ikat ke event
 RefreshPlayerList()
 Players.PlayerAdded:Connect(RefreshPlayerList)
 Players.PlayerRemoving:Connect(RefreshPlayerList)
 
--- ==== UI: Dropdown pilih player ====
--- Catatan: Sesuaikan API lib UI kamu. Banyak lib punya AddDropdown yang return handle.
 PlayerDropdown = TPPlayerSection:AddDropdown("SelectTPPlayer", {
     Title    = "Select Player",
     Values   = PlayerList,
@@ -2265,7 +2155,6 @@ PlayerDropdown = TPPlayerSection:AddDropdown("SelectTPPlayer", {
     end
 })
 
--- ==== UI: Tombol teleport ====
 TPPlayerSection:AddButton({
     Title = "Teleport to the Player!",
     Description = "Teleport to selected player",
@@ -2290,7 +2179,6 @@ TPPlayerSection:AddButton({
     end
 })
 
--- ================= NPC =================
 local NPCSection = Tabs.Teleport:AddSection("NPC Teleport")
 local npcFolder = ReplicatedStorage:WaitForChild("NPC")
 for _, npc in pairs(npcFolder:GetChildren()) do
@@ -2311,26 +2199,21 @@ for _, npc in pairs(npcFolder:GetChildren()) do
     end
 end
 
--- ================= EVENT HUNT (Smart Event Hunter FA) ================
 local EventSection = Tabs.Event:AddSection("Auto Event")
 
--- ===== Global env / default states =====
 local G = (getgenv and getgenv()) or _G
-G.autoEvent           = G.autoEvent or false          -- flag utama toggle
-G.savedCFrame         = G.savedCFrame or nil          -- posisi/orientasi semula
+G.autoEvent           = G.autoEvent or false
+G.savedCFrame         = G.savedCFrame or nil
 G.__AutoEvent_Running = G.__AutoEvent_Running or false
 G.__AutoEvent_Task    = G.__AutoEvent_Task or nil
-G.__FA_Active         = G.__FA_Active or false        -- status Fake Anchor aktif?
+G.__FA_Active         = G.__FA_Active or false
 
--- Optional states dari ekosistem kamu (biarin kalau belum ada)
 G.toggleState = G.toggleState or { bool_autoFish = false, autoFish = false }
 
--- ===== Services =====
 local Players    = game:GetService("Players")
 local Workspace  = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
--- ===== Helpers =====
 local function safeSetToggle(tg, state)
     pcall(function()
         if tg and typeof(tg.Set) == "function" then
@@ -2353,22 +2236,20 @@ local function getHRP()
     return my and my:FindFirstChild("HumanoidRootPart") or nil
 end
 
--- ---------- Fake Anchor (tanpa Anchored=true) ----------
 local function FA_apply(hrp)
     if not hrp or G.__FA_Active then return end
-    -- nolkan velocity dulu
+
     pcall(function()
         hrp.AssemblyLinearVelocity = Vector3.new()
         hrp.AssemblyAngularVelocity = Vector3.new()
     end)
-    -- lock posisi
+
     local bv = Instance.new("BodyVelocity")
     bv.Name = "__LH_FA_BV"
     bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
     bv.Velocity = Vector3.new(0, 0, 0)
     bv.Parent = hrp
 
-    -- stabilkan orientasi
     local bg = Instance.new("BodyGyro")
     bg.Name = "__LH_FA_BG"
     bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
@@ -2386,13 +2267,12 @@ local function FA_release(hrp)
         local obj = hrp:FindFirstChild(n)
         if obj then pcall(function() obj:Destroy() end) end
     end
-    -- pastikan bebas gerak lagi
+
     pcall(function()
         hrp.AssemblyLinearVelocity = hrp.AssemblyLinearVelocity
     end)
     G.__FA_Active = false
 end
--- -------------------------------------------------------
 
 local function findEventTargetPos()
     local props = Workspace:FindFirstChild("Props")
@@ -2412,9 +2292,6 @@ local function findEventTargetPos()
     return nil
 end
 
--- =========================================
--- Main loop (tiap 4 detik; idle saat toggle OFF)
--- =========================================
 function startAutoEventLoop()
     if G.__AutoEvent_Running then return end
     G.__AutoEvent_Running = true
@@ -2428,7 +2305,6 @@ function startAutoEventLoop()
         while task.wait(4) do
             local hrp = getHRP()
 
-            -- Toggle OFF → rapikan state + lepas FA lalu lanjut iterasi
             if not G.autoEvent then
                 safeFloating(false)
                 if G.floatToggle then safeSetToggle(G.floatToggle, false) end
@@ -2437,31 +2313,26 @@ function startAutoEventLoop()
                 continue
             end
 
-            -- Toggle ON
-            safeFloating(true) -- worm event sering di bawah air
+            safeFloating(true)
 
             local targetPos = findEventTargetPos()
             if targetPos and hrp then
-                -- Simpan posisi/orientasi asli sekali saja
+
                 if not G.savedCFrame then
                     G.savedCFrame = hrp.CFrame
                 end
 
-                -- Kalau jauh > 75 stud dari event, TP di atasnya (40)
                 local dist = (hrp.Position - targetPos).Magnitude
                 if dist > 75 then
                     hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 40, 0))
                 end
 
-                -- aktifkan Fake Anchor saat di event
                 FA_apply(hrp)
 
-                -- Pastikan float on
                 if G.floatToggle then
                     safeSetToggle(G.floatToggle, true)
                 end
 
-                -- Pastikan AutoFish menyala (sinkron sama ekosistem kamu)
                 if not G.toggleState.bool_autoFish then
                     G.toggleState.bool_autoFish = true
                 end
@@ -2472,7 +2343,7 @@ function startAutoEventLoop()
                     end
                 end
             else
-                -- Props kosong → balik ke origin, lepas FA, & matikan float
+
                 if G.savedCFrame and hrp then
                     hrp.CFrame = G.savedCFrame
                 end
@@ -2487,12 +2358,8 @@ function startAutoEventLoop()
     end)
 end
 
--- Jalankan loop (akan idle bila toggle OFF)
 startAutoEventLoop()
 
--- =========================================
--- TOGGLE (LimitHub Section API)
--- =========================================
 EventSection:AddToggle("EH_SmartHunterFA", {
     Title   = "Auto Event",
     Content = "Auto Fish at Event",
@@ -2501,19 +2368,16 @@ EventSection:AddToggle("EH_SmartHunterFA", {
     Callback = function(state)
         G.autoEvent = state
         if state then
-            startAutoEventLoop() -- jaga-jaga kalau loop belum aktif
+            startAutoEventLoop()
         else
-            -- kalau dimatikan manual, langsung lepas FA juga biar aman
+
             FA_release(getHRP())
         end
     end
 })
 
--- =========================================
--- Reset state saat respawn
--- =========================================
 LocalPlayer.CharacterAdded:Connect(function()
-    -- Saat respawn, matikan float, lepas FA & hapus posisi tersimpan
+
     local hrp = getHRP()
     FA_release(hrp)
     safeFloating(false)
@@ -2559,7 +2423,6 @@ end
 SettingsSection:AddButton({ Title = "Rejoin Server", Description = "Rejoin the current server", Callback = Rejoin })
 SettingsSection:AddButton({ Title = "Server Hop (New Server)", Description = "Hop to a new server", Callback = ServerHop })
 
--- ================= Catch hook → panggil sendCatchEmbedOnce =================
 do
     local LP = Players.LocalPlayer
     local PG2 = LP:WaitForChild("PlayerGui")
@@ -2626,7 +2489,6 @@ do
     PG2.DescendantAdded:Connect(function(obj) if obj:IsA("TextLabel") then hookLabel(obj) end end)
 end
 
--- ================= Save/Load config =================
 local resetcfg = false
 SaveManager:SetLibrary(Library)
 if isfile(CONFIG_PATH) then pcall(function() SaveManager:Load(CONFIG_PATH) end) end
