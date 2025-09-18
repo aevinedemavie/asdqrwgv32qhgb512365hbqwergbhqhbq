@@ -872,116 +872,31 @@ FarmSection:AddButton({
 
 local GuideSection = Tabs.Main:AddSection("Auto Guide")
 ----------------------------------------------------------------------
--- SERVICES / LOCALS
+-- FIXED POSISI TARGET
 ----------------------------------------------------------------------
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local COIN_POS          = Vector3.new(-553.60, 18.03, 116.94)     -- ganti sesuai pos Coin
+local ENCHANT_STONE_POS = Vector3.new(-2112.59, 6.41, 3804.57)    -- ganti sesuai pos Enchant Stone
 
 ----------------------------------------------------------------------
--- HELPERS
+-- HELPER: TELEPORT
 ----------------------------------------------------------------------
 local function getHRP()
-    local char = (workspace:FindFirstChild("Characters") and workspace.Characters:FindFirstChild(LocalPlayer.Name))
-              or LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local char = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
     return char and char:FindFirstChild("HumanoidRootPart")
 end
 
-local function tpTo(posOrCFrame)
-    local hrp = getHRP(); if not hrp then return false end
-    if typeof(posOrCFrame) == "CFrame" then
-        hrp.CFrame = posOrCFrame
-    else
-        hrp.CFrame = CFrame.new(posOrCFrame)
-    end
+local function tpTo(pos)
+    local hrp = getHRP(); if not hrp then return end
+    hrp.CFrame = CFrame.new(pos)
     pcall(function()
         hrp.AssemblyLinearVelocity  = Vector3.zero
         hrp.AssemblyAngularVelocity = Vector3.zero
     end)
-    return true
-end
-
--- Coin finder
-local function findNearestCoin(maxScan, maxDist)
-    maxScan = maxScan or 2048
-    maxDist = maxDist or 3000
-    local hrp = getHRP(); if not hrp then return nil end
-    local origin = hrp.Position
-    local best, bestD = nil, math.huge
-    local scanned = 0
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if scanned >= maxScan then break end
-        scanned += 1
-        if string.find(string.lower(obj.Name), "coin", 1, true) then
-            local pos
-            if obj:IsA("BasePart") then pos = obj.Position
-            elseif obj:IsA("Model") and obj.PrimaryPart then pos = obj.PrimaryPart.Position end
-            if pos then
-                local d = (origin - pos).Magnitude
-                if d < bestD and d <= maxDist then
-                    best, bestD = obj, d
-                end
-            end
-        end
-    end
-    return best
-end
-
-local function getObjectPosition(obj)
-    if not obj then return nil end
-    if obj:IsA("BasePart") then return obj.Position end
-    if obj:IsA("Model") and obj.PrimaryPart then return obj.PrimaryPart.Position end
-    return nil
-end
-
-local function isCoinValid(obj)
-    return obj and obj.Parent and string.find(string.lower(obj.Name), "coin", 1, true) ~= nil
 end
 
 ----------------------------------------------------------------------
--- AUTOFARM (AutoFishing v2)
+-- UI: DROPDOWN + TOGGLE
 ----------------------------------------------------------------------
-local autoFishRunning = false
-local autoFishTask
-local AutoFishToggleRef
-
-local function StartAutoFish()
-    if autoFishRunning then return end
-    autoFishRunning = true
-    if autoFishTask then pcall(task.cancel, autoFishTask); autoFishTask = nil end
-    autoFishTask = task.spawn(function()
-        while autoFishRunning do
-            -- taruh logic perfect fishing mu di sini
-            task.wait(0.1)
-        end
-    end)
-end
-
-local function StopAutoFish()
-    autoFishRunning = false
-    if autoFishTask then task.cancel(autoFishTask); autoFishTask = nil end
-end
-
-local function isAutoFarmOn()
-    return autoFishRunning == true
-end
-
-AutoFishToggleRef = FarmSection:AddToggle("AutoFishing v2", {
-    Title       = "Auto Fish (Perfect Mode)",
-    Description = "Best Mode (Safe)",
-    Default     = false,
-    Callback    = function(enabled)
-        if enabled then
-            StartAutoFish()
-        else
-            StopAutoFish()
-        end
-    end
-})
-
-----------------------------------------------------------------------
--- PRIORITY TP
-----------------------------------------------------------------------
-local ENCHANT_STONE_POS = Vector3.new(-2054.70, 8.93, 3778.30)
 local selectedPriority = "Coin"
 
 GuideSection:AddDropdown("SelectPriority", {
@@ -997,71 +912,174 @@ GuideSection:AddDropdown("SelectPriority", {
     end
 })
 
--- sekali TP sesuai pilihan
-local function doOnePriorityTP()
-    if selectedPriority == "Coin" then
-        local target = findNearestCoin()
-        if target then
-            local pos = getObjectPosition(target)
-            if pos and tpTo(pos + Vector3.new(0, 2.5, 0)) then
-                local ok, t0 = false, os.clock()
-                while os.clock() - t0 < 1.5 do
-                    if not isCoinValid(target) then break end
-                    local hrp = getHRP()
-                    if hrp and (hrp.Position - pos).Magnitude < 15 then ok = true break end
-                    task.wait(0.1)
-                end
-                if typeof(NotifyHub) == "function" then
-                    pcall(NotifyHub, ok and "Arrived near Coin" or "Coin invalid/too far")
-                end
-            end
-        end
-    elseif selectedPriority == "Enchant Stone" then
-        if tpTo(ENCHANT_STONE_POS + Vector3.new(0, 2.5, 0)) then
-            local arrived, t0 = false, os.clock()
-            while os.clock() - t0 < 1.5 do
-                local hrp = getHRP()
-                if hrp and (hrp.Position - ENCHANT_STONE_POS).Magnitude < 15 then arrived = true break end
-                task.wait(0.1)
-            end
-            if typeof(NotifyHub) == "function" then
-                pcall(NotifyHub, arrived and "Arrived at Enchant Stone" or "Failed to reach Enchant Stone")
-            end
-        end
-    end
-end
-
-----------------------------------------------------------------------
--- AUTO SELECT PRIORITY TOGGLE (ONCE)
-----------------------------------------------------------------------
-GuideSection:AddToggle("AutoSelectPriority", {
-    Title       = "Auto Select Priority",
-    Description = "Priority to farm :",
+GuideSection:AddToggle("TeleportPriority", {
+    Title       = "Auto to Priority",
+    Description = "",
     Default     = false,
     Callback    = function(state)
         if not state then return end
 
-        -- TP sekali
-        doOnePriorityTP()
-
-        -- kalau AutoFarm belum on, nyalain
-        if not isAutoFarmOn() then
-            local okSet = false
-            pcall(function()
-                if AutoFishToggleRef and AutoFishToggleRef.SetState then
-                    AutoFishToggleRef:SetState(true)
-                    okSet = true
-                end
-            end)
-            if not okSet then
-                StartAutoFish()
-            end
+        if selectedPriority == "Coin" then
+            tpTo(COIN_POS + Vector3.new(0, 2.5, 0))
             if typeof(NotifyHub) == "function" then
-                pcall(NotifyHub, "Auto Farm was OFF → turned ON automatically.")
+                pcall(NotifyHub, "Teleported to Coin")
+            end
+
+        elseif selectedPriority == "Enchant Stone" then
+            tpTo(ENCHANT_STONE_POS + Vector3.new(0, 2.5, 0))
+            if typeof(NotifyHub) == "function" then
+                pcall(NotifyHub, "Teleported to Enchant Stone")
             end
         end
     end
 })
+
+----------------------------------------------------------------------
+-- FRIEND TOOLS SECTION
+----------------------------------------------------------------------
+local Players     = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local FriendSection = Tabs.Main:AddSection("Friend Tools")
+
+----------------------------------------------------------------------
+-- STATE
+----------------------------------------------------------------------
+local SelectedFriendLabel = nil
+local PlayerLabels = {}
+local LabelToPlayer = {}
+autoAddEnabled = false
+autoAddConn = nil
+
+----------------------------------------------------------------------
+-- HELPERS
+----------------------------------------------------------------------
+local function buildPlayerLabel(p)
+    return string.format("%s (@%s)", p.DisplayName or p.Name, p.Name)
+end
+
+local function refreshPlayerList()
+    table.clear(PlayerLabels)
+    table.clear(LabelToPlayer)
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then
+            local label = buildPlayerLabel(p)
+            table.insert(PlayerLabels, label)
+            LabelToPlayer[label] = p
+        end
+    end
+end
+
+local function sendFriendRequestTo(player)
+    if not player or player == LocalPlayer then
+        return false, "invalid"
+    end
+    if typeof(LocalPlayer.IsFriendsWith) == "function" then
+        local okFriend, already = pcall(function()
+            return LocalPlayer:IsFriendsWith(player.UserId)
+        end)
+        if okFriend and already then
+            return false, "already-friends"
+        end
+    end
+    local ok, err = pcall(function()
+        LocalPlayer:RequestFriendship(player)
+    end)
+    return ok, err
+end
+
+----------------------------------------------------------------------
+-- DROPDOWN
+----------------------------------------------------------------------
+FriendSection:AddDropdown("FriendSelectPlayer", {
+    Title   = "Select Player",
+    Values  = PlayerLabels,
+    Multi   = false,
+    Default = 1,
+    Callback = function(label)
+        SelectedFriendLabel = label
+    end
+})
+
+refreshPlayerList()
+Players.PlayerAdded:Connect(refreshPlayerList)
+Players.PlayerRemoving:Connect(refreshPlayerList)
+
+----------------------------------------------------------------------
+-- TOGGLE: ADD PLAYER (ONCE)
+----------------------------------------------------------------------
+FriendSection:AddToggle("AddPlayerOnce", {
+    Title       = "Add Player",
+    Description = "Send friend request to selected player",
+    Default     = false,
+    Callback    = function(state)
+        if not state then return end
+
+        local target = LabelToPlayer[SelectedFriendLabel]
+        if not target then
+            if typeof(NotifyHub) == "function" then pcall(NotifyHub, "Please select a player first!") end
+        else
+            local ok, err = sendFriendRequestTo(target)
+            if typeof(NotifyHub) == "function" then
+                if ok then
+                    pcall(NotifyHub, "Friend request sent to "..buildPlayerLabel(target))
+                else
+                    local msg = (err == "already-friends") and "Already friends" or ("Failed: "..tostring(err))
+                    pcall(NotifyHub, msg)
+                end
+            end
+        end
+    end
+})
+
+----------------------------------------------------------------------
+-- TOGGLE: AUTO ADD ALL PLAYERS
+----------------------------------------------------------------------
+FriendSection:AddToggle("AutoAddAllPlayers", {
+    Title       = "Auto Add Player",
+    Description = "Auto send friend requests to everyone in server",
+    Default     = false,
+    Callback    = function(state)
+        autoAddEnabled = state
+
+        if state then
+            -- add semua player yg udah ada
+            for _, p in ipairs(Players:GetPlayers()) do
+                if p ~= LocalPlayer then
+                    sendFriendRequestTo(p)
+                    task.wait(0.1)
+                end
+            end
+
+            if typeof(NotifyHub) == "function" then
+                pcall(NotifyHub, "Auto Add Player enabled. Existing players added.")
+            end
+
+            -- hook player baru
+            if not autoAddConn then
+                autoAddConn = Players.PlayerAdded:Connect(function(p)
+                    if autoAddEnabled and p ~= LocalPlayer then
+                        sendFriendRequestTo(p)
+                        if typeof(NotifyHub) == "function" then
+                            pcall(NotifyHub, "Auto added "..p.DisplayName)
+                        end
+                    end
+                end)
+            end
+        else
+            -- OFF → lepas koneksi
+            if autoAddConn then
+                autoAddConn:Disconnect()
+                autoAddConn = nil
+            end
+            if typeof(NotifyHub) == "function" then
+                pcall(NotifyHub, "Auto Add Player disabled.")
+            end
+        end
+    end
+})
+
 
 local SellSection = Tabs.Main:AddSection("Auto Sell")
 
