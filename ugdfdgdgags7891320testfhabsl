@@ -959,8 +959,8 @@ local function buildPlayerLabel(p)
 end
 
 local function refreshPlayerList()
-    table.clear(PlayerLabels)
-    table.clear(LabelToPlayer)
+    PlayerLabels = {}
+    LabelToPlayer = {}
 
     for _, p in ipairs(Players:GetPlayers()) do
         if p ~= LocalPlayer then
@@ -975,13 +975,11 @@ local function sendFriendRequestTo(player)
     if not player or player == LocalPlayer then
         return false, "invalid"
     end
-    if typeof(LocalPlayer.IsFriendsWith) == "function" then
-        local okFriend, already = pcall(function()
-            return LocalPlayer:IsFriendsWith(player.UserId)
-        end)
-        if okFriend and already then
-            return false, "already-friends"
-        end
+    local okFriend, already = pcall(function()
+        return LocalPlayer:IsFriendsWith(player.UserId)
+    end)
+    if okFriend and already then
+        return false, "already-friends"
     end
     local ok, err = pcall(function()
         LocalPlayer:RequestFriendship(player)
@@ -1018,16 +1016,19 @@ FriendSection:AddToggle("AddPlayerOnce", {
 
         local target = LabelToPlayer[SelectedFriendLabel]
         if not target then
-            if typeof(NotifyHub) == "function" then pcall(NotifyHub, "Please select a player first!") end
-        else
-            local ok, err = sendFriendRequestTo(target)
             if typeof(NotifyHub) == "function" then
-                if ok then
-                    pcall(NotifyHub, "Friend request sent to "..buildPlayerLabel(target))
-                else
-                    local msg = (err == "already-friends") and "Already friends" or ("Failed: "..tostring(err))
-                    pcall(NotifyHub, msg)
-                end
+                pcall(NotifyHub, "Please select a player first!")
+            end
+            return
+        end
+
+        local ok, err = sendFriendRequestTo(target)
+        if typeof(NotifyHub) == "function" then
+            if ok then
+                pcall(NotifyHub, "Friend request sent to "..buildPlayerLabel(target))
+            else
+                local msg = (err == "already-friends") and "Already friends" or ("Failed: "..tostring(err))
+                pcall(NotifyHub, msg)
             end
         end
     end
@@ -1044,16 +1045,15 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
         autoAddEnabled = state
 
         if state then
-            -- add semua player yg udah ada
+            -- add semua player yang sudah ada
             for _, p in ipairs(Players:GetPlayers()) do
                 if p ~= LocalPlayer then
                     sendFriendRequestTo(p)
                     task.wait(0.1)
                 end
             end
-
             if typeof(NotifyHub) == "function" then
-                pcall(NotifyHub, "Auto Add Player enabled. Existing players added.")
+                pcall(NotifyHub, "Auto Add Player enabled.")
             end
 
             -- hook player baru
@@ -1068,7 +1068,7 @@ FriendSection:AddToggle("AutoAddAllPlayers", {
                 end)
             end
         else
-            -- OFF → lepas koneksi
+            -- OFF → disconnect listener
             if autoAddConn then
                 autoAddConn:Disconnect()
                 autoAddConn = nil
