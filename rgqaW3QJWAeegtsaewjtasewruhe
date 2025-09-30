@@ -1,28 +1,3 @@
-
-local __CFG = CFG_Attach(Window, Tabs, "HorizonHUB")
-
-
-local function __AttachConfig(Window,Tabs,profileName)
-local HttpService=game:GetService("HttpService")
-local function _safe(f,...) local ok,res=pcall(f,...) if ok then return res end end
-local function _ensureDir(p) local s="" for q in string.gmatch(p,"[^/]+") do s=(s=="" and q) or (s.."/"..q) if not isfolder(s) then makefolder(s) end end end
-local function _getVal(el) return _safe(function() return el:GetValue() end) or _safe(function() return el:Get() end) or _safe(function() return el:GetValues() end) or rawget(el,"Value") or rawget(el,"_value") or rawget(el,"Selected") or rawget(el,"Text") end
-local function _setVal(el,v) if v==nil then return end if _safe(function() el:SetValue(v) end)~=nil then return end if _safe(function() el:Set(v) end)~=nil then return end if _safe(function() el:SetValues(v) end)~=nil then return end if rawget(el,"Value")~=nil then el.Value=v end if rawget(el,"_value")~=nil then el._value=v end if rawget(el,"Text")~=nil and type(v)=="string" then el.Text=v end if rawget(el,"Selected")~=nil then el.Selected=v end _safe(function() return el:Refresh() end) _safe(function() return el:Render() end) end
-local function CreateConfigHub(window,name) local regs,root={},("WindUI/%s/config"):format(tostring(window and window.Folder or "HorizonHUB")) local current=tostring(name or "HorizonHUB") local function path(n) return ("%s/%s.json"):format(root,tostring(n or current)) end local function add(el,key) if el and key then regs[key]=el end end local function save(n) local use=path(n) _ensureDir(root) local data={} for k,el in pairs(regs) do data[k]=_getVal(el) end writefile(use,HttpService:JSONEncode(data)) return true end local function load(n) local use=path(n) if not isfile(use) then return false end local raw=readfile(use) local ok,data=pcall(function() return HttpService:JSONDecode(raw) end) if not ok or type(data)~="table" then return false end for k,v in pairs(data) do local el=regs[k] if el then _setVal(el,v) end end return true end local function all() if not isfolder(root) then return {} end local out={} for _,f in ipairs(_safe(function() return listfiles(root) end) or {}) do local nm=f:match("([^/]+)%.json$") or f:match("([^/]+)$") if nm then table.insert(out,nm) end end table.sort(out) return out end local function setprofile(n) current=tostring(n or current) return current end return {add=add,save=save,load=load,all=all,setprofile=setprofile,root=root} end
-local CFG=CreateConfigHub(Window,profileName or "HorizonHUB")
-local function wrap(t,fn) local o=t[fn] if type(o)~="function" then return end t[fn]=function(self,opt) local el=o(self,opt) local key=opt and opt.ConfigKey if key then CFG.add(el,tostring(key)) end return el end end
-for _,tab in pairs(Tabs) do for _,fn in ipairs({"Input","Toggle","Dropdown","Slider","ColorPicker","Keybind","Textbox","Switch","Radio"}) do wrap(tab,fn) end end
-local function listCfg() local arr=CFG.all() local clean={} for _,v in ipairs(arr) do table.insert(clean,tostring(v)) end return clean end
-local Selected=nil
-local _Pick=nil
-Tabs.Setting:Section({ Title = "Config" })
-_Pick = Tabs.Setting:Dropdown({ Title="Select Profile", Values=listCfg(), Default={}, Multi=false, Callback=function(sel) if type(sel)=="table" then Selected=sel[1] else Selected=sel end CFG.setprofile(Selected) end })
-Tabs.Setting:Button({ Title="Refresh Profiles", Callback=function() _safe(function() _Pick:SetValues(listCfg()) end) end })
-Tabs.Setting:Paragraph({ Title="Config Controls", Desc="Save & Load", Color="Blue", Buttons={ { Icon="save", Title="Save", Callback=function() CFG.save(Selected) end }, { Icon="download", Title="Load", Callback=function() CFG.load(Selected) end } }})
-return CFG
-end
-local CFG_Attach = __AttachConfig
-
 local a = {}
 a['1'] = Instance.new'ScreenGui'
 a['1'].Name = 'HorizonHUB'
