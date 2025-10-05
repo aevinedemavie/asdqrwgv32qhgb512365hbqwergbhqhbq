@@ -38,32 +38,18 @@ Duration = 5,
 })
 end
 
-local Tab1 = Window:AddTab({
-    Title = "Home",
-    Icon = "home"
-})
-local Tab2 = Window:AddTab({
-    Title = "Fishing",
-    Icon = "hammer"
-})
-local Tab3 = Window:AddTab({
-    Title = "Event",
-    Icon = "eye"
-})
-local Tab4 = Window:AddTab({
-    Title = "Shop",
-    Icon = "shopping-cart"
-})
-local Tab5 = Window:AddTab({
-    Title = "Misc",
-    Icon = "user"
-})
-local Tab6 = Window:AddTab({
-    Title = "Teleport",
-    Icon = "map"
-})
 
-Window:SelectTab(1) 
+local Tabs = {
+    Main     = Window:AddTab({ Title = "Main",     Icon = "star" }),
+    Player   = Window:AddTab({ Title = "Player",   Icon = "user" }),
+    Event    = Window:AddTab({ Title = "Event",    Icon = "eye" }),
+    Weather  = Window:AddTab({ Title = "Weather",  Icon = "cloud" }),
+    Enchant  = Window:AddTab({ Title = "Enchant",  Icon = "wand" }),
+    Shop     = Window:AddTab({ Title = "Shop",     Icon = "shopping-cart" }),
+    Teleport  = Window:AddTab({ Title = "Teleport",  Icon = "map" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "cog" })
+}
+Window:SelectTab(1)
 
 local Data = {}
 -- initialize variable 
@@ -748,7 +734,7 @@ end)
 
 
 
-local FishingSec = Tab2:AddSection("Auto Fishing")
+local FishingSec = Main:AddSection("Auto Fishing")
 FishingSec:AddDropdown("Cast_Mode", {
 Title = "Cast Mode",
 Description = "Select Mode",
@@ -852,7 +838,7 @@ end
 })
 
 
-local SellSec = Tab2:AddSection("Auto Sell Fish")
+local SellSec = Main:AddSection("Auto Sell Fish")
 Data.AutoMaxBP = false
 
 SellSec:AddInput("Threshold_Sell",{
@@ -893,7 +879,7 @@ end
 
 
 -- ================= EVENT HUNT (Smart Event Hunter FA) ================
-local EventSection = Tab3:AddSection("Auto Event")
+local EventSection = Event:AddSection("Auto Event")
 
 -- ===== Global env / default states =====
 local G = (getgenv and getgenv()) or _G
@@ -1127,7 +1113,7 @@ BaitList = BaitList or {
     "Dark Matter Bait","Corrupt Bait","Aether Bait"
 }
 
-local BobberSection = Tab4:AddSection("Bobbers Shop")
+local BobberSection = Shop:AddSection("Bobbers Shop")
 BobberSection:AddDropdown("BaitDropdown", {
     Title = "Select: Bait",
     Values = BaitList,
@@ -1156,7 +1142,7 @@ BobberSection:AddButton({
 })
 
 -- ---------- ROD SHOP ----------
-local RodSection = Tab4:AddSection("Rod Shop")
+local RodSection = Shop:AddSection("Rod Shop")
 
 local RodIds = {
     ["Luck Rod"]      = 79,   -- 350
@@ -1216,7 +1202,7 @@ RodSection:AddButton({
 })
 
 -- ---------- BOAT SHOP ----------
-local BoatSection = Tab4:AddSection("Boat Shop")
+local BoatSection = Shop:AddSection("Boat Shop")
 
 local BoatIds = {
     ["Small Boat"]     = 1, -- 300
@@ -1257,7 +1243,7 @@ BoatSection:AddButton({
 })
 
 -- ---------- ITEMS SHOP ----------
-local ItemsSection = Tab4:AddSection("Items Shop")
+local ItemsSection = Shop:AddSection("Items Shop")
 local ItemIds = { ["Diving Gear"] = 105, ["Fishing Radar"] = 81 }
 local ItemList = { "Diving Gear", "Fishing Radar" }
 
@@ -1295,7 +1281,7 @@ local Movement = {
     NoClip         = false,
 }
 
-local Sec_Movement = Tab5:AddSection("Movement")
+local Sec_Movement = Player:AddSection("Movement")
 
 Sec_Movement:AddToggle("LH_Speed", {
     Title = "Enable WalkSpeed",
