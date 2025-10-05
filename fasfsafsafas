@@ -1,4 +1,4 @@
--- Load Library
+
 local Library, SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/jamalarap61/Mslspakwnendlsowjnssoaknana/refs/heads/main/wnsoaowknswlwksnwmk.lua"))()
 
 
@@ -1287,3 +1287,101 @@ ItemsSection:AddButton({
         if ok then print("[Item] Result:", res) else warn("[Item] Failed:", res) end
     end
 })
+
+local Movement = {
+    SpeedEnabled   = false,
+    SpeedValue     = 100,
+    InfJump        = false,
+    NoClip         = false,
+}
+
+local Sec_Movement = Tabs.Misc:AddSection("Movement")
+
+Sec_Movement:AddToggle("LH_Speed", {
+    Title = "Enable WalkSpeed",
+    Default = false,
+    Callback = function(on)
+        Movement.SpeedEnabled = on
+        pcall(function()
+            local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            local hum  = char:FindFirstChildOfClass("Humanoid")
+            if hum then hum.WalkSpeed = on and Movement.SpeedValue or 16 end
+        end)
+    end
+})
+
+Sec_Movement:AddSlider("LH_SpeedVal", {
+    Title = "WalkSpeed Value",
+    Description = "Adjust your walk speed",
+    Default = 100,
+    Min = 16,
+    Max = 200,
+    Rounding = 0,
+    Callback = function(v)
+        Movement.SpeedValue = v
+        if Movement.SpeedEnabled then
+            pcall(function()
+                local char = LocalPlayer.Character
+                local hum  = char and char:FindFirstChildOfClass("Humanoid")
+                if hum then hum.WalkSpeed = v end
+            end)
+        end
+    end
+})
+
+Sec_Movement:AddToggle("LH_InfJump", {
+    Title = "Enable Infinite Jump",
+    Default = false,
+    Callback = function(on)
+        Movement.InfJump = on
+    end
+})
+
+Sec_Movement:AddToggle("LH_NoClip", {
+    Title = "Enable NoClip",
+    Default = false,
+    Callback = function(on)
+        Movement.NoClip = on
+        if not on then
+            pcall(function()
+                local char = LocalPlayer.Character
+                if char then
+                    for _, p in ipairs(char:GetDescendants()) do
+                        if p:IsA("BasePart") then p.CanCollide = true end
+                    end
+                end
+            end)
+        end
+    end
+})
+
+-- Infinite Jump
+pcall(function()
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if Movement.InfJump then
+            local char = LocalPlayer.Character
+            local hum  = char and char:FindFirstChildOfClass("Humanoid")
+            if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
+        end
+    end)
+end)
+
+
+RunService.Stepped:Connect(function()
+    if Movement.NoClip then
+        local char = LocalPlayer.Character
+        if char then
+            for _, p in ipairs(char:GetDescendants()) do
+                if p:IsA("BasePart") then p.CanCollide = false end
+            end
+        end
+    end
+end)
+
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    if Movement.SpeedEnabled then
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum then hum.WalkSpeed = Movement.SpeedValue end
+    end
+end)
