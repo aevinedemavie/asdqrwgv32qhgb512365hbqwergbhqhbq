@@ -43,7 +43,6 @@ local Tabs = {
     Main     = Window:AddTab({ Title = "Main",     Icon = "star" }),
     Player   = Window:AddTab({ Title = "Player",   Icon = "user" }),
     Event    = Window:AddTab({ Title = "Event",    Icon = "eye" }),
-    Weather  = Window:AddTab({ Title = "Weather",  Icon = "cloud" }),
     Enchant  = Window:AddTab({ Title = "Enchant",  Icon = "wand" }),
     Shop     = Window:AddTab({ Title = "Shop",     Icon = "shopping-cart" }),
     Teleport  = Window:AddTab({ Title = "Teleport",  Icon = "map" }),
@@ -1273,7 +1272,7 @@ ItemsSection:AddButton({
     end
 })
 
-local WeatherSection = Tabs.Shop:AddSectiom("Weather Shop")
+local WeatherSection = Tabs.Shop:AddSection("Weather Shop")
 
 local __autoWeatherOn = false
 local __selectedWeathers = {}
