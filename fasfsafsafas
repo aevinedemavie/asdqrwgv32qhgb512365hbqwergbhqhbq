@@ -1092,8 +1092,6 @@ EventSection:AddToggle("EH_SmartHunterFA", {
 })
 
 
-
--- Single ReplicatedStorage / Net reference (avoid duplicate locals)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Net = ReplicatedStorage
     :WaitForChild("Packages")
@@ -1101,13 +1099,13 @@ local Net = ReplicatedStorage
     :WaitForChild("sleitnick_net@0.2.0")
     :WaitForChild("net")
 
--- Remotes (created once, re-used across sections)
+-- Remotes (pakai nama dengan slash, sesuai struktur game kamu)
 local PurchaseBaitRF = PurchaseBaitRF or Net:WaitForChild("RF/PurchaseBait")
 local PurchaseRodRF  = PurchaseRodRF  or Net:WaitForChild("RF/PurchaseFishingRod")
 local PurchaseBoatRF = PurchaseBoatRF or Net:WaitForChild("RF/PurchaseBoat")
 local PurchaseGearRF = PurchaseGearRF or Net:WaitForChild("RF/PurchaseGear")
 
--- Global state (single getgenv; do NOT re-declare again)
+-- Global state
 local G = (getgenv and getgenv()) or _G
 G.__SelectedBaitId = G.__SelectedBaitId or nil
 G.__SelectedRodId  = G.__SelectedRodId  or nil
@@ -1115,15 +1113,14 @@ G.__SelectedBoatId = G.__SelectedBoatId or nil
 G.__SelectedItemId = G.__SelectedItemId or nil
 
 -- ---------- BOBBERS / BAIT SHOP ----------
--- Fallbacks if not defined earlier
 BaitIds = BaitIds or {
-    ["Luck Bait"] = 2,
-    ["Midnight Bait"] = 3,
-    ["Nature Bait"] = 4,
-    ["Chroma Bait"] = 5,
+    ["Luck Bait"]        = 2,
+    ["Midnight Bait"]    = 3,
+    ["Nature Bait"]      = 4,
+    ["Chroma Bait"]      = 5,
     ["Dark Matter Bait"] = 6,
-    ["Corrupt Bait"] = 7,
-    ["Aether Bait"] = 8,
+    ["Corrupt Bait"]     = 7,
+    ["Aether Bait"]      = 8,
 }
 BaitList = BaitList or {
     "Luck Bait","Midnight Bait","Nature Bait","Chroma Bait",
@@ -1131,35 +1128,30 @@ BaitList = BaitList or {
 }
 
 local BobberSection = Tab4:AddSection("Bobbers Shop")
-
 BobberSection:AddDropdown("BaitDropdown", {
     Title = "Select: Bait",
     Values = BaitList,
     Default = nil,
     Multi = false,
     Callback = function(value)
-        if not value then return end
-        local id = BaitIds[value]
+        if typeof(value) == "table" then value = value[1] end
+        local id = value and BaitIds[value]
         if id then
             G.__SelectedBaitId = id
             warn(("[Bait] Selected '%s' -> id=%s"):format(value, tostring(id)))
         else
             G.__SelectedBaitId = nil
-            warn("[Bait] Unknown selection:", tostring(value))
+            warn("[Bait] Unknown selection: " .. tostring(value))
         end
     end
 })
-
 BobberSection:AddButton({
     Title = "Buy Selected Bait",
-    Description = "",
     Callback = function()
         local id = G.__SelectedBaitId
-        if not id then
-            warn("[Bait] Please select a bait first!")
-            return
-        end
-        pcall(function() PurchaseBaitRF:InvokeServer(id) end)
+        if not id then return warn("[Bait] Please select a bait first!") end
+        local ok, res = pcall(function() return PurchaseBaitRF:InvokeServer(id) end)
+        if ok then print("[Bait] Result:", res) else warn("[Bait] Failed:", res) end
     end
 })
 
@@ -1176,14 +1168,14 @@ local RodIds = {
     ["Angler Rod"]    = 168,  -- 8,000K
     ["Ares Rod"]      = 126,  -- 3,000K
     ["Astral Rod"]    = 5,    -- 1,000K
-    ["Chrome Pod"]    = 7,    -- 437K
+    ["Chrome Rod"]    = 7,    -- 437K  -- <- konsisten
     ["Midnight Rod"]  = 80,   -- 50K
     ["Steampunk Rod"] = 6,    -- 215K
 }
 
 local RodList = {
     "Luck Rod","Carbon Rod","Grass Rod","Demascus Rod","Ice Rod","Lucky Rod",
-    "Angler Rod","Ares Rod","Astral Rod","Chrome Pod","Midnight Rod","Steampunk Rod"
+    "Angler Rod","Ares Rod","Astral Rod","Chrome Rod","Midnight Rod","Steampunk Rod" -- <- ganti Pod -> Rod
 }
 
 RodSection:AddDropdown("RodDropdown", {
@@ -1192,10 +1184,11 @@ RodSection:AddDropdown("RodDropdown", {
     Default = nil,
     Multi   = false,
     Callback = function(value)
+        if typeof(value) == "table" then value = value[1] end
         local id = value and RodIds[value]
         if not id then
             G.__SelectedRodId = nil
-            warn("[Rod] Unknown selection:", tostring(value))
+            warn("[Rod] Unknown selection: " .. tostring(value))
             return
         end
         G.__SelectedRodId = id
@@ -1208,11 +1201,17 @@ RodSection:AddButton({
     Description = "Purchase the rod selected in the dropdown",
     Callback = function()
         local id = G.__SelectedRodId
-        if not id then
-            warn("[Rod] Please select a rod first!")
-            return
+        if not id then return warn("[Rod] Please select a rod first!") end
+        -- Sama seperti contohmu: argumen tunggal angka
+        local ok, res = pcall(function() return PurchaseRodRF:InvokeServer(id) end)
+        if ok then
+            print("[Rod] Result:", res)
+        else
+            warn("[Rod] Failed:", res)
+            -- Kalau masih gagal, coba format alternatif:
+            -- local ok2, res2 = pcall(function() return PurchaseRodRF:InvokeServer({id}) end)
+            -- print("Alt tbl arg:", ok2, res2)
         end
-        pcall(function() PurchaseRodRF:InvokeServer(id) end)
     end
 })
 
@@ -1228,10 +1227,7 @@ local BoatIds = {
     ["Fishing Boat"]   = 6, -- 180k
     ["Mini Yacht"]     = 7, -- 1.20m
 }
-
-local BoatList = {
-    "Small Boat","Kayak","Jetski","Highfield Boat","Speed Boat","Fishing Boat","Mini Yacht"
-}
+local BoatList = {"Small Boat","Kayak","Jetski","Highfield Boat","Speed Boat","Fishing Boat","Mini Yacht"}
 
 BoatSection:AddDropdown("BoatDropdown", {
     Title   = "Select Boat",
@@ -1239,38 +1235,30 @@ BoatSection:AddDropdown("BoatDropdown", {
     Default = nil,
     Multi   = false,
     Callback = function(value)
+        if typeof(value) == "table" then value = value[1] end
         local id = value and BoatIds[value]
         if not id then
             G.__SelectedBoatId = nil
-            warn("[Boat] Unknown selection:", tostring(value))
+            warn("[Boat] Unknown selection: " .. tostring(value))
             return
         end
         G.__SelectedBoatId = id
         warn(("[Boat] Selected '%s' -> id=%s"):format(value, tostring(id)))
     end
 })
-
 BoatSection:AddButton({
     Title = "Buy Selected Boat",
-    Description = "Purchase the boat selected in the dropdown",
     Callback = function()
         local id = G.__SelectedBoatId
-        if not id then
-            warn("[Boat] Please select a boat first!")
-            return
-        end
-        pcall(function() PurchaseBoatRF:InvokeServer(id) end)
+        if not id then return warn("[Boat] Please select a boat first!") end
+        local ok, res = pcall(function() return PurchaseBoatRF:InvokeServer(id) end)
+        if ok then print("[Boat] Result:", res) else warn("[Boat] Failed:", res) end
     end
 })
 
 -- ---------- ITEMS SHOP ----------
 local ItemsSection = Tab4:AddSection("Items Shop")
-
-local ItemIds = {
-    ["Diving Gear"]   = 105,
-    ["Fishing Radar"] = 81,
-}
-
+local ItemIds = { ["Diving Gear"] = 105, ["Fishing Radar"] = 81 }
 local ItemList = { "Diving Gear", "Fishing Radar" }
 
 ItemsSection:AddDropdown("ItemDropdown", {
@@ -1279,26 +1267,23 @@ ItemsSection:AddDropdown("ItemDropdown", {
     Default = nil,
     Multi   = false,
     Callback = function(value)
+        if typeof(value) == "table" then value = value[1] end
         local id = value and ItemIds[value]
         if not id then
             G.__SelectedItemId = nil
-            warn("[Item] Unknown selection:", tostring(value))
+            warn("[Item] Unknown selection: " .. tostring(value))
             return
         end
         G.__SelectedItemId = id
         warn(("[Item] Selected '%s' -> id=%s"):format(value, tostring(id)))
     end
 })
-
 ItemsSection:AddButton({
     Title = "Buy Selected Item",
-    Description = "Purchase the item selected in the dropdown",
     Callback = function()
         local id = G.__SelectedItemId
-        if not id then
-            warn("[Item] Please select an item first!")
-            return
-        end
-        pcall(function() PurchaseGearRF:InvokeServer(id) end)
+        if not id then return warn("[Item] Please select an item first!") end
+        local ok, res = pcall(function() return PurchaseGearRF:InvokeServer(id) end)
+        if ok then print("[Item] Result:", res) else warn("[Item] Failed:", res) end
     end
 })
