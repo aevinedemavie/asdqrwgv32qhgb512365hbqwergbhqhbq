@@ -1295,7 +1295,7 @@ local Movement = {
     NoClip         = false,
 }
 
-local Sec_Movement = Tabs.Misc:AddSection("Movement")
+local Sec_Movement = Tabs.Tab5:AddSection("Movement")
 
 Sec_Movement:AddToggle("LH_Speed", {
     Title = "Enable WalkSpeed",
