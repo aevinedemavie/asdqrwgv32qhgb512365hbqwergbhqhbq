@@ -1098,7 +1098,7 @@ G.__SelectedRodId  = G.__SelectedRodId  or nil
 G.__SelectedBoatId = G.__SelectedBoatId or nil
 G.__SelectedItemId = G.__SelectedItemId or nil
 
--- ---------- BOBBERS / BAIT SHOP ----------
+
 BaitIds = BaitIds or {
     ["Luck Bait"]        = 2,
     ["Midnight Bait"]    = 3,
@@ -1242,7 +1242,6 @@ BoatSection:AddButton({
     end
 })
 
--- ---------- ITEMS SHOP ----------
 local ItemsSection = Tabs.Shop:AddSection("Items Shop")
 local ItemIds = { ["Diving Gear"] = 105, ["Fishing Radar"] = 81 }
 local ItemList = { "Diving Gear", "Fishing Radar" }
@@ -1271,6 +1270,83 @@ ItemsSection:AddButton({
         if not id then return warn("[Item] Please select an item first!") end
         local ok, res = pcall(function() return PurchaseGearRF:InvokeServer(id) end)
         if ok then print("[Item] Result:", res) else warn("[Item] Failed:", res) end
+    end
+})
+
+local WeatherSection = Tabs.Shop:AddSectiom("Weather Shop")
+
+local __autoWeatherOn = false
+local __selectedWeathers = {}
+
+local function _normW(s)
+    return (tostring(s or ""):gsub("^%s+",""):gsub("%s+$",""):lower())
+end
+local WeatherAlias = { ["strom"] = "Storm" }
+
+local function __purchaseWeather(preset)
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local ok, res = pcall(function()
+        local canon = WeatherAlias[_normW(preset)] or preset
+        local args = { tostring(canon or "Wind") }
+        local rf = ReplicatedStorage
+            :WaitForChild("Packages")
+            :WaitForChild("_Index")
+            :WaitForChild("sleitnick_net@0.2.0")
+            :WaitForChild("net")
+            :WaitForChild("RF/PurchaseWeatherEvent")
+        return rf:InvokeServer(unpack(args))
+    end)
+    if not ok then warn("[Weather] Invoke failed:", res) end
+    return ok, res
+end
+
+local function __purchaseAll(list)
+    for _, w in ipairs(list) do __purchaseWeather(w) end
+end
+
+task.spawn(function()
+    while task.wait(10) do
+        if __autoWeatherOn and #__selectedWeathers > 0 then
+            __purchaseAll(__selectedWeathers)
+        end
+    end
+end)
+
+local WeatherValues = {
+    Wind    = "Wind",
+    Cloudy  = "Cloudy",
+    Snow    = "Snow",
+    Strom   = "Strom",
+    Radiant = "Radiant",
+    ["Shark Hunt"] = "Shark Hunt",
+}
+
+WeatherSection:AddDropdown("WeatherChoice", {
+    Title = "Weather Preset",
+    Values = WeatherValues,
+    Multi  = true,
+    Default = {},
+    Callback = function(valMap)
+        __selectedWeathers = {}
+        if type(valMap) == "table" then
+            for label, chosen in pairs(valMap) do
+                if chosen then table.insert(__selectedWeathers, tostring(label)) end
+            end
+        elseif type(valMap) == "string" then
+            __selectedWeathers = { valMap }
+        end
+    end
+})
+
+WeatherSection:AddToggle("AutoWeatherToggle", {
+    Title = "Auto Weather",
+    Description = "Auto purchase selected weather",
+    Default = false,
+    Callback = function(state)
+        __autoWeatherOn = state and true or false
+        if __autoWeatherOn and #__selectedWeathers > 0 then
+            __purchaseAll(__selectedWeathers)
+        end
     end
 })
 
