@@ -1,6 +1,19 @@
+local url = "https://raw.githubusercontent.com/jamalarap61/Mslspakwnendlsowjnssoaknana/refs/heads/main/wnsoaowknswlwksnwmk.lua"
 
+local okGet, src = pcall(function() return game:HttpGet(url) end)
+if not okGet then
+    error("HttpGet failed: " .. tostring(src))
+end
 
-local Library, SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/jamalarap61/Mslspakwnendlsowjnssoaknana/refs/heads/main/wnsoaowknswlwksnwmk.lua"))()
+local chunk, compileErr = loadstring(src)
+if not chunk then
+    error("loadstring failed: " .. tostring(compileErr))
+end
+
+local Library, SaveManager = chunk()
+if not Library then
+    error("Loader returned nil Library")
+end
 
 
 function gradient(text, startColor, endColor)
