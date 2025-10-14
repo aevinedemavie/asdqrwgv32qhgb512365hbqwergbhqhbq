@@ -684,56 +684,51 @@ RemoteFishCaught.OnClientEvent:Connect(function(...)
 
 end)
 
-
-
 local FishingSec = Tabs.Main:AddSection("Auto Fishing")
 
+-- Dropdown Cast Mode
 FishingSec:AddDropdown("Cast_Mode", {
-Title = "Cast Mode",
-Description = "Select Mode",
-Values = {"Random", "Perfect", "Amazing"}, 
-Default = "Random",
-Multi = false, 
-AllowNull = true, 
-Callback = function(option)
-        if option == "Perfect" then
-            toggleState.perfectCast = true
-            toggleState.amazingCast = false
-
-        elseif option == "Amazing" then
-            toggleState.amazingCast = true
-            toggleState.perfectCast = false
-
-        elseif option == "Random" then
+    Title = "Cast Mode",
+    Description = "Select Mode",
+    Values = {"Random", "Perfect", "Amazing"},
+    Default = "Random",
+    Multi = false,
+    AllowNull = true,
+    Callback = function(option)
+        toggleState.perfectCast = (option == "Perfect")
+        toggleState.amazingCast = (option == "Amazing")
+        -- kalau Random: dua-duanya false
+        if option == "Random" then
             toggleState.perfectCast = false
             toggleState.amazingCast = false
-
         end
-end
+    end,
 })
 
+-- Toggle Instant Catch
 DataWoi.InstantCatch = false
-FishingSec:AddToggle("Instant_Catch",{
-Title = "Instant Catch",
-Description = "Mode",
-Default = false,
-Callback = function(value)
+FishingSec:AddToggle("Instant_Catch", {
+    Title = "Auto Fishing (Without Animation)",
+    Description = "Without Animation",
+    Default = false,
+    Callback = function(value)
         if value then
             if DataWoi.InstantCatch then return end
             DataWoi.InstantCatch = true
             toggleState.fishingAnimation = false
+            if type(startFishing) == "function" then startFishing(true) end
         else
             DataWoi.InstantCatch = false
             toggleState.fishingAnimation = true
+            if type(startFishing) == "function" then startFishing(false) end
         end
-end
+    end,
 })
-
 
 DataWoi.AutoMancing = false
 local ToggleFS = FishingSec:AddToggle("Auto_Fishingnew",{
-Title = "Auto Fishing New",
-Description = "Amazing Cast/Perfect Cast",
+Title = "Auto Fishing",
+Description = "With Animation",
 Default = false,
 Callback = function(value)
         if value then
@@ -751,180 +746,6 @@ Callback = function(value)
 end
 })
 
-
-local VirtualUser = game:GetService("VirtualUser")
-
-local net = replicatedStorage:WaitForChild("Packages")
-    :WaitForChild("_Index")
-    :WaitForChild("sleitnick_net@0.2.0")
-    :WaitForChild("net")
-
-local rodRemote        = net:WaitForChild("RF/ChargeFishingRod")
-local miniGameRemote   = net:WaitForChild("RF/RequestFishingMinigameStarted")
-local finishRemote     = net:WaitForChild("RE/FishingCompleted")
-local PurchaseBaitRF   = net:WaitForChild("RF/PurchaseBait")
-
-local autofish, perfectCast, ijump = false, true, false
-local autoFishTask
-local rodCharged = false
-
-
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local __HIDE_TAG = "__LimitHubHidden"
-local __hideConns, __saved, __watchConn = {}, {}, nil
-
-local function __rootGui(obj)
-    local sg = obj:FindFirstAncestorOfClass("ScreenGui")
-    if sg then return sg end
-    local top = obj
-    while top and top.Parent and top.Parent ~= PlayerGui do
-        top = top.Parent
-    end
-    return top
-end
-
-local function __isFishingUi(obj)
-    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-        local t = (obj.Text or ""):lower()
-        if t:find("click fast") or t:find("charge") or t:find("perfect") then return true end
-    end
-    if (obj:IsA("Frame") or obj:IsA("ImageLabel")) then
-        local s = obj.AbsoluteSize
-        if s and s.Y >= 80 and s.X <= 40 then
-            local root = __rootGui(obj) or obj
-            for _, d in ipairs(root:GetDescendants()) do
-                if d:IsA("TextLabel") then
-                    local tt = (d.Text or ""):lower()
-                    if tt:find("click fast") or tt:find("charge") or tt:find("perfect") then return true end
-                end
-            end
-        end
-    end
-    return false
-end
-
-local function __hideObj(go)
-    if __saved[go] == nil then
-        __saved[go] = {
-            Visible = go:IsA("GuiObject") and go.Visible or nil,
-            Enabled = go:IsA("ScreenGui") and go.Enabled or nil,
-            BT = go:IsA("Frame") and go.BackgroundTransparency or nil,
-            TT = go:IsA("TextLabel") and go.TextTransparency or nil,
-            IT = go:IsA("ImageLabel") and go.ImageTransparency or nil,
-        }
-    end
-    if go:IsA("ScreenGui") then go.Enabled = false end
-    if go:IsA("GuiObject") then go.Visible = false end
-    if go:IsA("Frame") then go.BackgroundTransparency = 1 end
-    if go:IsA("TextLabel") then go.TextTransparency = 1 end
-    if go:IsA("ImageLabel") then go.ImageTransparency = 1 end
-    go:SetAttribute(__HIDE_TAG, true)
-
-    table.insert(__hideConns, go.Changed:Connect(function(prop)
-        if not go:GetAttribute(__HIDE_TAG) then return end
-        if prop == "Visible" and go:IsA("GuiObject") then go.Visible = false end
-        if prop == "Enabled" and go:IsA("ScreenGui") then go.Enabled = false end
-        if prop == "BackgroundTransparency" and go:IsA("Frame") then go.BackgroundTransparency = 1 end
-        if prop == "TextTransparency" and go:IsA("TextLabel") then go.TextTransparency = 1 end
-        if prop == "ImageTransparency" and go:IsA("ImageLabel") then go.ImageTransparency = 1 end
-    end))
-end
-
-local function __hideTree(root)
-    if not root then return end
-    if root:IsA("GuiObject") or root:IsA("ScreenGui") then __hideObj(root) end
-    for _, d in ipairs(root:GetDescendants()) do
-        if d:IsA("GuiObject") then __hideObj(d) end
-    end
-end
-
-local function __enableHideFishingGui()
-    for _, d in ipairs(PlayerGui:GetDescendants()) do
-        if __isFishingUi(d) then __hideTree(__rootGui(d)) end
-    end
-    __watchConn = PlayerGui.DescendantAdded:Connect(function(obj)
-        if __isFishingUi(obj) then __hideTree(__rootGui(obj)) end
-    end)
-end
-
-local function __restoreObj(go, st)
-    if not st then return end
-    if go:IsA("ScreenGui") and st.Enabled ~= nil then go.Enabled = st.Enabled end
-    if go:IsA("GuiObject") and st.Visible ~= nil then go.Visible = st.Visible end
-    if go:IsA("Frame") and st.BT ~= nil then go.BackgroundTransparency = st.BT end
-    if go:IsA("TextLabel") and st.TT ~= nil then go.TextTransparency = st.TT end
-    if go:IsA("ImageLabel") and st.IT ~= nil then go.ImageTransparency = st.IT end
-    go:SetAttribute(__HIDE_TAG, nil)
-end
-
-local function __disableHideFishingGui()
-    if __watchConn then __watchConn:Disconnect() __watchConn = nil end
-    for _, c in ipairs(__hideConns) do pcall(function() c:Disconnect() end) end
-    table.clear(__hideConns)
-    for go, st in pairs(__saved) do
-        if go and go.Parent then pcall(function() __restoreObj(go, st) end) end
-    end
-    table.clear(__saved)
-end
-
-local function safeFinish()
-    if rodCharged and finishRemote and finishRemote.Parent then
-        local ok = pcall(function() finishRemote:FireServer() end)
-        if ok then return true end
-    end
-    return false
-end
-
-FishingSec:AddToggle("AutoFishingold", {
-    Title = "Auto Fishing (With Animation)",
-    Description = "Nerfed Good Only",
-    Default = false,
-    Callback = function(enabled)
-        if autoFishTask then task.cancel(autoFishTask); autoFishTask = nil end
-
-        if not enabled then
-            __disableHideFishingGui()
-            local args = { false }
-            replicatedStorage:WaitForChild("Packages"):WaitForChild("_Index")
-                :WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
-                :WaitForChild("RF/UpdateAutoFishingState"):InvokeServer(unpack(args))
-            return
-        end
-
-        __enableHideFishingGui()
-
-        autoFishTask = task.spawn(function()
-            local RS = game:GetService("ReplicatedStorage")
-            local okController, controllerOrErr = pcall(function() return require(RS.Controllers.FishingController) end)
-            if not okController then return end
-            local a = controllerOrErr
-
-            if not _G.fishinghooked then
-                local okOld, old = pcall(function() return clonefunction(a.FishingMinigameClick) end)
-                if okOld and old then
-                    a.FishingMinigameClick = function()
-                        if getupvalue(old, 1) and getupvalue(old, 2) then
-                            getupvalue(old, 3):Fire(getupvalue(old, 2))
-                            return safeFinish()
-                        end
-                    end
-                    _G.fishinghooked = true
-                end
-            end
-
-            local args = { true }
-            replicatedStorage:WaitForChild("Packages"):WaitForChild("_Index")
-                :WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
-                :WaitForChild("RF/UpdateAutoFishingState"):InvokeServer(unpack(args))
-
-            while true do
-                task.wait(0.00000001)
-                pcall(function() for _, v in next, getproto(a.RequestChargeFishingRod, 1, true) do v() end end)
-                pcall(function() safeFinish() end)
-            end
-        end)
-    end
-})
 
 DataWoi.AutoFixStuck = false
 FishingSec:AddToggle("Auto_Fix",{
