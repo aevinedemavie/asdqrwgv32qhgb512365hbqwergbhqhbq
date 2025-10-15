@@ -1,3 +1,5 @@
+
+
 local Library, SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/jamalarap61/Mslspakwnendlsowjnssoaknana/refs/heads/main/wnsoaowknswlwksnwmk.lua"))()
 
 
@@ -46,11 +48,12 @@ local Tabs = {
     Trade    = Window:AddTab({ Title = "Trade Option",  Icon = "airplay"}),
     Shop     = Window:AddTab({ Title = "Shop",     Icon = "shopping-cart" }),
     Teleport = Window:AddTab({ Title = "Teleport",  Icon = "map" }),
+    Webhook  = Window:AddTab({ Title = "Webhook Option",  Icon = "link" }),
     Settings = Window:AddTab({ Title = "Settings", Icon = "cog" })
 }
 Window:SelectTab(1)
 
-local Data = {}
+local DataWoi = {}
 -- initialize variable 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -196,14 +199,14 @@ local function unfavoriteAll()
 end
 
 
------FUNGSI PLAY ANIMASI ------
+
 local currentTracks = {}
 local function playWithDuration(id, duration)
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoid = character:WaitForChild("Humanoid")
 
-    -- Hentikan semua track sebelum play
+
     for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
         track:Stop()
     end
@@ -237,48 +240,38 @@ local function stopFishing()
 
 end
 
--- deps
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
--- flag runner global (biar gampang stop dari luar)
-getgenv().__fishingRunner = getgenv().__fishingRunner or { running = false }
-
-local function oneFrame()
-    -- yield 1 frame (tanpa delay “waktu”); aman biar thread ga kebakar
-    RunService.Heartbeat:Wait()
-end
-
 local function startFishing(val)
-    if val then
+    if val then 
         pcall(function()
             local args = {1}
-            ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index")
-                :WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
-                :WaitForChild("RE/EquipToolFromHotbar"):FireServer(unpack(args))
+            game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild(
+                "sleitnick_net@0.2.0"):WaitForChild("net"):WaitForChild("RE/EquipToolFromHotbar"):FireServer(
+                unpack(args))
         end)
 
-        getgenv().__fishingRunner.running = true
-
+        task.wait(0.8)
         task.spawn(function()
-            while getgenv().__fishingRunner.running do
+            while val do
+ 
+                for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+                    track:Stop()
+                end
                 pcall(function()
-                    -- stop semua anim aktif
-                    for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-                        track:Stop()
-                    end
-
                     dapatIkan = true
 
-                    if toggleState.fishingAnimation and StartRodChargeAnim then
+                    if  toggleState.fishingAnimation then
                         StartRodChargeAnim:Play()
                     end
 
                     Remotes.RF_ChargeFishingRod:InvokeServer(Workspace:GetServerTimeNow())
-                    if toggleState.fishingAnimation and RodThrowAnim then
-                        RodThrowAnim:Play()
+
+                    if  toggleState.fishingAnimation then
+                        RodThrowAnim:Play() 
                     end
 
+                    task.wait(0.2)
+
+                    -- Hitung x y casting
                     local x, y
                     if toggleState.perfectCast and not toggleState.amazingCast then
                         x, y = -0.7499996423721313, 1
@@ -289,53 +282,38 @@ local function startFishing(val)
                         y = math.random(0, 1000) / 1000
                     end
 
-                    if toggleState.fishingAnimation then
-                        if playWithDuration then
+                    if  toggleState.fishingAnimation then 
                             playWithDuration("92624107165273", 2)
                             playWithDuration("134965425664034", 15)
-                        end
-                    end
-
+                      end
                     Remotes.RF_RequestFishingMinigameStarted:InvokeServer(x, y)
+ 
+                    task.wait(0.2)
 
-                    if toggleState.fishingAnimation and EasyFishReelStartAnim then
+                    if  toggleState.fishingAnimation then
                         EasyFishReelStartAnim:Play()
-                    end
-
-                    local completedArgs = {}
-                    while dapatIkan and getgenv().__fishingRunner.running do
-                        Remotes.RE_FishingCompleted:FireServer(unpack(completedArgs))
-                        oneFrame() 
-                    end
+                    end 
+                            local completedArgs = {}
+                      while dapatIkan do
+                              Remotes.RE_FishingCompleted:FireServer(unpack(completedArgs))
+                                task.wait(0.1)
+                     end
                 end)
 
-                if toggleState.loopDelay and toggleState.loopDelay > 0 then
-                    task.wait(toggleState.loopDelay)
-                else
-                    oneFrame()
-                end
+                task.wait(toggleState.loopDelay)
             end
         end)
-
     else
-
-        getgenv().__fishingRunner.running = false
-
-
-        pcall(function()
-            Remotes.RF_CancelFishing:InvokeServer()
-        end)
-
+         Remotes.RF_CancelFishing:InvokeServer()
         pcall(function()
             if FishingController and FishingController.RequestClientStopFishing then
                 FishingController:RequestClientStopFishing(true)
             end
         end)
-
-
         for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
             track:Stop()
         end
+       
     end
 end
 
@@ -467,7 +445,7 @@ local function startModifier()
 
 end
 
-local thresholdbp = 4498
+local thresholdbp = 4990
 local function obtainedNewFish()
 
     local bagSize = 0
@@ -724,43 +702,44 @@ Callback = function(option)
 end
 })
 
-Data.AutoMancing = false
-local ToggleFS = FishingSec:AddToggle("Auto_Fishing",{
+DataWoi.AutoMancing = false
+local ToggleFS = FishingSec:AddToggle("Auto_Fishingnew",{
 Title = "Auto Fishing",
-Description = "Turn on this toggle for auto fish",
+Description = "Only Turn on this if want Animation",
 Default = false,
 Callback = function(value)
         if value then
-            if Data.AutoMancing then return end
-            Data.AutoMancing = true
+            if DataWoi.AutoMancing then return end
+            DataWoi.AutoMancing = true
             toggleState.autoFishing = true
-            startFishing(true)        
+            startFishing(value)        
         else
-            Data.AutoMancing = false
+            if DataWoi.AutoMancing then
+            startFishing(value)        
+            DataWoi.AutoMancing = false
             toggleState.autoFishing = false
-            startFishing(false) 
+        end
+    end
+end
+})
+
+DataWoi.InstantCatch = false
+FishingSec:AddToggle("Instant_Catch",{
+Title = "No Animation",
+Description = "Turn On This if want Without Animation",
+Default = false,
+Callback = function(value)
+        if value then
+            if DataWoi.InstantCatch then return end
+            Data.InstantCatch = true
+            toggleState.fishingAnimation = false
+        else
+            DataWoi.InstantCatch = false
+            toggleState.fishingAnimation = true
         end
 end
 })
 
-Data.InstantCatch = false
-FishingSec:AddToggle("Instant_Catch",{
-Title = "No Animation",
-Description = "Turn on this if without Animation",
-Default = false,
-Callback = function(value)
-        if value then
-            if Data.InstantCatch then return end
-            Data.InstantCatch = true
-            toggleState.fishingAnimation = false
-            startFishing(true) 
-        else
-            Data.InstantCatch = false
-            toggleState.fishingAnimation = true
-            startFishing(true) 
-        end
-end
-})
 
 local freezeConnection = nil
 local freezeCFrame = nil
@@ -795,7 +774,7 @@ local freezecok = FishingSec:AddToggle("Freeze Character", {
                 end)
             end)
 
-            print("[Freeze] Aktif: posisi dikunci.")
+            print("[Freeze] Active")
         else
             if freezeConnection then
                 freezeConnection:Disconnect()
@@ -813,18 +792,18 @@ local freezecok = FishingSec:AddToggle("Freeze Character", {
 })
 
 
-Data.AutoFixStuck = false
+DataWoi.AutoFixStuck = false
 FishingSec:AddToggle("Auto_Fix",{
 Title = "Auto Fix Stuck",
 Description = "Fishing Stuck",
 Default = false,
 Callback = function(value)
         if value then
-            if Data.FixStuck then return end
-            Data.FixStuck = true
+            if DataWoi.FixStuck then return end
+            DataWoi.FixStuck = true
             toggleState.autoFix = true
         else
-            Data.FixStuck = false
+            DataWoi.FixStuck = false
             toggleState.autoFix = false
         end
 end
@@ -845,54 +824,6 @@ task.spawn(function()
         end
     end
 end)
-
---// === Bypass Function ===
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local _loadedFC, _loadedConst = nil, nil
-
-local function applyFishingBypass()
-    if not _loadedFC then
-        local okFC, FC = pcall(function()
-            return require(ReplicatedStorage:WaitForChild("Controllers"):WaitForChild("FishingController"))
-        end)
-        if okFC and type(FC) == "table" then _loadedFC = FC end
-    end
-
-    if not _loadedConst then
-        local okConst, Const = pcall(function()
-            return require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Constants"))
-        end)
-        if okConst and type(Const) == "table" then _loadedConst = Const end
-    end
-
-    if _loadedConst then
-        local old = _loadedConst.FishingCooldownTime
-        _loadedConst.FishingCooldownTime = 0.0
-        print("[Bypass] From:", tostring(old), "→ 0")
-    end
-
-    if _loadedFC then
-        _loadedFC.OnCooldown = function(...) return false end
-        print("[Bypass] ✅")
-    end
-end
-
-FishingSec:AddToggle("Vuln_Caught", {
-    Title = "Vuln Caught",
-    Description = "Bypass fishing cooldown & vulnerability check",
-    Default = false,
-    Callback = function(value)
-        if value then
-            print("[Vuln Caught] Applying bypass...")
-            applyFishingBypass()
-            print("[Vuln Caught] Active ✅")
-        else
-            print("[Vuln Caught] Disabled 🧊")
-        end
-    end,
-})
-
-
 
 FishingSec:AddButton({
 Title = "Manual Fix Stuck",
@@ -1496,8 +1427,14 @@ local islandCoordsList = {
     ["10"] = { name = "Sisyphus", position = Vector3.new(-3667.556, -135.574, -900.99) },
     ["11"] = { name = "Weather Machine", position = Vector3.new(-1471, -3, 1929) },
     ["12"] = { name = "Winter Fest", position = Vector3.new(1611, 4, 3280) },
-    ["13"] = { name = "Coral Reefs", position = Vector3.new(-2949.694, 63.25, 2248.52) }
+    ["13"] = { name = "Coral Reefs", position = Vector3.new(-2949.694, 63.25, 2248.52) },
+    ["14"] = { name = "Sacred Temple", position = Vector3.new(1475.197, -21.850, -632.660) },
+    ["15"] = { name = "Ancient Jungle", position = Vector3.new(1275.619, 7.858, -194.129) },
+    ["16"] = { name = "Ancient Underground Stelar", position = Vector3.new(2100.39917, -91.1976471, -710.773804, 0.122371674, -6.42108589e-09,
+        -0.992484331, 1.06256577e-08, 1, -5.15958387e-09, 0.992484331, -9.9144124e-09, 0.122371674) }
+
 }
+
 for _, data in pairs(islandCoordsList) do
     IslandsSection:AddButton({
         Title = data.name, Description = "Teleport to " .. data.name,
@@ -2080,6 +2017,290 @@ AutoFavSection:AddToggle("FavAllRarity", {
     end
 })
 
+local HttpService       = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TextService       = game:GetService("TextService") -- antisipasi lib UI GetTextSize
+
+-- ===================== CONFIG / STATE =====================
+local AUTHOR_ICON = "https://cdn.discordapp.com/attachments/1412614172302381106/1412899628629758122/B43515AA-FBA7-4D37-B830-5C531B5A0158.png"
+
+local WebhookState = {
+    url = "",
+    enabled = false,
+    rarityFilter = {},
+    _raritySet = {},
+}
+
+-- ========== RARITY FILTER HELPERS ==========
+local function _normR(s)
+    return (tostring(s or ""):gsub("^%s+",""):gsub("%s+$",""):lower())
+end
+
+local function _rebuildRaritySet(vals)
+    for k in pairs(WebhookState._raritySet) do WebhookState._raritySet[k] = nil end
+    table.clear(WebhookState.rarityFilter)
+    if type(vals) ~= "table" then return end
+
+    local hasNum = false
+    for k,_ in pairs(vals) do if typeof(k)=="number" then hasNum=true break end end
+
+    if hasNum then
+        for _,v in ipairs(vals) do
+            local key=_normR(v)
+            if key~="" then
+                WebhookState._raritySet[key]=true
+                table.insert(WebhookState.rarityFilter,v)
+            end
+        end
+    else
+        for k,v in pairs(vals) do
+            if v then
+                local key=_normR(k)
+                if key~="" then
+                    WebhookState._raritySet[key]=true
+                    table.insert(WebhookState.rarityFilter,k)
+                end
+            end
+        end
+    end
+end
+
+local function _passRarityFilter(r)
+    local set = WebhookState._raritySet
+    if not set or next(set)==nil then return true end
+    return set[_normR(r)] == true
+end
+
+-- ===================== UI =====================
+local WebhookSection = Tabs.Webhook:AddSection("Webhook Option")
+
+WebhookSection:AddDropdown("RarityWebhook", {
+    Title="Choose Rarity",
+    Description="No Select = All Rarity",
+    Values={ "Common","Uncommon","Rare","Epic","Legendary","Mythic","Secret" },
+    Default={},
+    Multi=true,
+    Callback=function(vals)
+        _rebuildRaritySet(vals)
+    end
+})
+
+WebhookSection:AddInput("WebhookURL", {
+    Title="Webhook URL",
+    Description="Put Your Webhook",
+    Placeholder="https://discord.com/api/webhooks/<ID>/<TOKEN>",
+    Default="",
+    Callback=function(text)
+        WebhookState.url = tostring(text or "")
+    end
+})
+
+WebhookSection:AddToggle("WebhookToggle", {
+    Title="Enable Webhook",
+    Description="",
+    Default=false,
+    Callback=function(on)
+        WebhookState.enabled = not not on
+    end
+})
+
+
+-- ===================== MAPPING / COLORS =====================
+local TierMap = {
+    [1]="Common",[2]="Uncommon",[3]="Rare",[4]="Epic",
+    [5]="Legendary",[6]="Mythic",[7]="Secret",
+}
+
+local RarityColor = {
+    Common=0x95A5A6, Uncommon=0x2ECC71, Rare=0x3498DB, Epic=0x9B59B6,
+    Legendary=0xF1C40F, Mythic=0xE67E22, Secret=0xE74C3C
+}
+
+getgenv().tierArray = getgenv().tierArray or {
+    { Name="Common",    Rarity=1,        TierColor=ColorSequence.new(Color3.fromRGB(255,250,246)), Tier=1 },
+    { Name="Uncommon",  Rarity=0.02,     TierColor=ColorSequence.new(Color3.fromRGB(195,255,85)),  Tier=2 },
+    { Name="Rare",      Rarity=0.004,    TierColor=ColorSequence.new(Color3.fromRGB(85,162,255)),  Tier=3 },
+    { Name="Epic",      Rarity=0.001,    TierColor=ColorSequence.new(Color3.fromRGB(173,79,255)),  Tier=4 },
+    { Name="Legendary", Rarity=0.0002,   TierColor=ColorSequence.new(Color3.fromRGB(255,184,42)),  Tier=5 },
+    { Name="Mythic",    Rarity=0.00002,  TierColor=ColorSequence.new(Color3.fromRGB(255,24,24)),   Tier=6 },
+    { Name="SECRET",    Rarity=0.000004, TierColor=ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(23,255,151)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(11,149,255)),
+    }), Tier=7 },
+}
+
+-- ===== Rarity via Chance (auto pick rarer) =====
+local RARITY_ORDER = { "Common","Uncommon","Rare","Epic","Legendary","Mythic","Secret" }
+local RARITY_INDEX = {}
+for i,n in ipairs(RARITY_ORDER) do RARITY_INDEX[n]=i end
+
+local function pickRarer(a,b)
+    if a and not b then return a end
+    if b and not a then return b end
+    if not a and not b then return nil end
+    local ia, ib = RARITY_INDEX[a] or 1, RARITY_INDEX[b] or 1
+    return (ia>ib) and a or b
+end
+
+local MUT_PREFIX = { ghost=true, stone=true, gold=true, albino=true, shiny=true, big=true, corrupt=true }
+
+local function baseNameForRarity(displayName)
+    local words = {}
+    for w in tostring(displayName or ""):gmatch("%S+") do table.insert(words, w) end
+    if #words==0 then return displayName end
+    local first = words[1]:lower()
+    if MUT_PREFIX[first] and #words>=2 then
+        table.remove(words,1)
+        return table.concat(words," ")
+    end
+    return displayName
+end
+
+local function tierNameFromTier(tierNumber)
+    if not tierNumber then return nil end
+    return TierMap[tierNumber] or "(unknown)"
+end
+
+local function _extractAssetId(s)
+    if type(s)~="string" then return nil end
+    return s:match("rbxassetid://(%d+)") or s:match("(%d+)$")
+end
+
+local function _thumbFromAssetId(assetStr)
+    local id=_extractAssetId(assetStr)
+    if not id then return nil end
+    local ok,res=pcall(function()
+        local url=("https://thumbnails.roblox.com/v1/assets?assetIds=%s&size=420x420&format=Png&isCircular=false"):format(id)
+        local raw=game:HttpGet(url)
+        return HttpService:JSONDecode(raw)
+    end)
+    if ok and res and res.data and res.data[1] and res.data[1].imageUrl then
+        return res.data[1].imageUrl
+    end
+    return nil
+end
+
+local function findItemModule(fishDisplayName)
+    local Items=ReplicatedStorage:FindFirstChild("Items")
+    if not Items then return nil,nil end
+    local target=tostring(fishDisplayName or ""):lower():gsub("%s+"," ")
+    for _,ms in ipairs(Items:GetDescendants()) do
+        if ms:IsA("ModuleScript") then
+            local ok,mod=pcall(require,ms)
+            if ok and type(mod)=="table" then
+                local d=mod.Data or mod.data or mod
+                local nm=d and d.Name and tostring(d.Name):lower():gsub("%s+"," ")
+                if nm and nm==target then return ms,d,mod end
+            end
+        end
+    end
+    return nil,nil
+end
+
+local _fishCache = {}
+local function resolveFishInfoByName(name)
+    if not name or name=="" then return nil end
+    local key=name:lower():gsub("[^%w]+"," ")
+    if _fishCache[key]~=nil then return _fishCache[key] or nil end
+
+    local _, data, modTable = findItemModule(name)
+    if data then
+        local tierNum   = tonumber(data.Tier)
+        local tierName  = tierNameFromTier(tierNum) or nil
+        local sellPrice = tonumber(modTable and modTable.SellPrice) or tonumber(data.SellPrice)
+        local chance    = data.Probability and tonumber(data.Probability.Chance) or nil
+        local iconUrl   = data.Icon and _thumbFromAssetId(data.Icon) or nil
+
+        local chanceR   = rarityFromChance(chance)
+        local tierR     = tierName
+        local finalR    = pickRarer(tierR, chanceR) or tierR or chanceR or "Common"
+
+        local info = {
+            name      = data.Name or name,
+            tier      = tierNum,
+            tierName  = tierName or finalR,
+            rarity    = finalR,
+            sellPrice = sellPrice,
+            chance    = chance,
+            iconUrl   = iconUrl
+        }
+        _fishCache[key]=info
+        return info
+    end
+    _fishCache[key]=false
+    return nil
+end
+
+-- ===================== WEBHOOK SENDER =====================
+local function is_valid_webhook(url)
+    if type(url)~="string" then return false end
+    if url:match("^https://discord%.com/api/webhooks/%d+/.+") or
+       url:match("^https://discordapp%.com/api/webhooks/%d+/.+") then return true end
+    return false
+end
+
+local function send_req(opt)
+    local r=(syn and syn.request) or (http and http.request) or http_request or request
+    if r then
+        local ok,res=pcall(function()
+            return r({Url=opt.Url,Method=opt.Method or "POST",Headers=opt.Headers or {["Content-Type"]="application/json"},Body=opt.Body})
+        end)
+        if ok then return true,res end
+        ok,res=pcall(function()
+            return r({url=opt.Url,method=opt.Method or "POST",headers=opt.Headers or {["Content-Type"]="application/json"},body=opt.Body})
+        end)
+        if ok then return true,res end
+    end
+    local ok,res=pcall(function()
+        return HttpService:RequestAsync({Url=opt.Url,Method=opt.Method or "POST",Headers=opt.Headers or {["Content-Type"]="application/json"},Body=opt.Body})
+    end)
+    return ok,res
+end
+
+local function sendCatchEmbedOnce(displayName, info, weight)
+    if not info then return end
+    if not WebhookState.enabled then return end
+    if not is_valid_webhook(WebhookState.url) then return end
+
+    local rarity=tostring(info.rarity or info.tierName or "Unknown")
+    if not _passRarityFilter(rarity) then return end
+
+    local embed = {
+        author      = { name = "LimitHub | Fish Caught", icon_url = AUTHOR_ICON },
+        title       = ("🎣 %s"):format(displayName),
+        description = ("**Rarity:** %s"):format(rarity),
+        color       = (RarityColor and RarityColor[rarity]) or 0x00BFFF,
+        fields      = {
+            { name = "Sell Price", value = tostring(info.sellPrice or "N/A"), inline = true },
+            { name = "Weight",     value = string.format("%.2f kg", weight or 0), inline = true },
+        },
+        thumbnail   = info.iconUrl and { url = info.iconUrl } or nil,
+        footer      = { text = "discord.gg/limithub" },
+        timestamp   = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+    send_req({
+        Url     = WebhookState.url .. "?wait=true",
+        Method  = "POST",
+        Headers = { ["Content-Type"] = "application/json" },
+        Body    = HttpService:JSONEncode({ embeds = { embed } })
+    })
+end
+
+-- ===================== EVENT HOOK =====================
+local netFolder = ReplicatedStorage
+    :WaitForChild("Packages"):WaitForChild("_Index")
+    :WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
+local REFishCaught = netFolder:WaitForChild("RE/FishCaught")
+
+REFishCaught.OnClientEvent:Connect(function(itemName, metadata)
+    local displayName = tostring(itemName or "")
+    local base        = baseNameForRarity(displayName)
+    local info        = resolveFishInfoByName(base)
+    local weightNum   = metadata and metadata.Weight or nil
+    sendCatchEmbedOnce(displayName, info, weightNum)
+end)
+
 local SettingsSection = Tabs.Settings:AddSection("Performance & Server")
 SettingsSection:AddButton({
     Title = "Boost FPS (Maximize Performance)",
@@ -2115,489 +2336,673 @@ local function ServerHop()
     until not cursor or #servers > 0
     if #servers > 0 then TeleportService:TeleportToPlaceInstance(placeId, servers[math.random(1,#servers)], LocalPlayer) end
 end
-
-local WebhookState = { url = "", enabled = false }
-
-local WebhookTab     = Window:AddTab({ Title = "Webhook", Icon = "link" })
-local WebhookSection = WebhookTab:AddSection("Webhook Option")
-
-WebhookSection:AddInput("WebhookURL", {
-    Title = "Webhook URL",
-    Description = "",
-    Placeholder = "You webhook link here!",
-    Default = "",
-    Callback = function(text)
-        WebhookState.url = tostring(text or "")
-    end
-})
-
--- ====== Filter Rarity utk Webhook (fix multi-select) ======
-WebhookState.rarityFilter = {}
-WebhookState._raritySet   = {}
-
-local function _normR(s) return (tostring(s or ""):gsub("^%s+",""):gsub("%s+$",""):lower()) end
-
--- IMPORTANT for Multi=true: Values harus dictionary label->string
-local RarityValues = {
-    Common     = "Common",
-    Uncommon   = "Uncommon",
-    Rare       = "Rare",
-    Epic       = "Epic",
-    Legendary  = "Legendary",
-    Mythic     = "Mythic",
-    Secret     = "Secret",
-}
-
-local function _rebuildRaritySet(vals)
-    for k in pairs(WebhookState._raritySet) do WebhookState._raritySet[k] = nil end
-    table.clear(WebhookState.rarityFilter)
-    if type(vals) ~= "table" then return end
-
-    -- terima dua bentuk: map {Common=true,...} atau array {"Common","Rare",...}
-    local hasNumeric = false
-    for k,_ in pairs(vals) do if typeof(k) == "number" then hasNumeric = true break end end
-
-    if hasNumeric then
-        for _,v in ipairs(vals) do
-            local key = _normR(v)
-            if key ~= "" then
-                WebhookState._raritySet[key] = true
-                table.insert(WebhookState.rarityFilter, v)
-            end
-        end
-    else
-        for k,v in pairs(vals) do
-            if v then
-                local key = _normR(k)
-                if key ~= "" then
-                    WebhookState._raritySet[key] = true
-                    table.insert(WebhookState.rarityFilter, k)
-                end
-            end
-        end
-    end
-end
-
-WebhookSection:AddDropdown("RarityWebhook", {
-    Title = "Choose Rarity Webhook",
-    Description = "Only show rarity you want (empty = all)",
-    Values = RarityValues,  -- dictionary label->string (AMAN untuk Multi=true)
-    Default = {},           -- kosongkan default agar tidak kirim string ke loader
-    Multi = true,
-    Callback = function(vals)
-        _rebuildRaritySet(vals)
-    end
-})
-
-WebhookSection:AddToggle("WebhookToggle", {
-    Title = "Enable Webhook",
-    Description = "Send Webhook that fish you caught!",
-    Default = false,
-    Callback = function(on)
-        WebhookState.enabled = on and true or false
-    end
-})
-
-local function sendWebhook(message, state)
-    state = state or WebhookState
-    local msg = tostring(message or "")
-    if not (state.enabled and type(state.url) == "string" and #state.url > 0) then return end
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    if not req then return end
-    pcall(function()
-        req({
-            Url = state.url, Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body = HttpService:JSONEncode({ content = msg })
-        })
-    end)
-end
-
-local function sendWebhookEmbed(title, fields, state)
-    state = state or WebhookState
-    if not (state.enabled and type(state.url) == "string" and #state.url > 0) then return end
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    if not req then return end
-    local embed = {
-        title = tostring(title or "Catch"),
-        color = 3447003,
-        fields = fields or {},
-        footer = { text = "discord.gg/limithub" },
-        timestamp = DateTime.now():ToIsoDate()
-    }
-    pcall(function()
-        req({
-            Url = state.url, Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
-            Body = HttpService:JSONEncode({ content = "", embeds = { embed } })
-        })
-    end)
-end
-
--- =======================================================================
--- Resolver Fish (rarity + rbxassetid -> thumbnail)
--- =======================================================================
-local function _norm(s) return (tostring(s or ""):lower():gsub("[^%w]+"," "):gsub("%s+"," ")) end
-
-local TierMap = {
-    [1]="Common",[2]="Uncommon",[3]="Rare",[4]="Epic",
-    [5]="Legendary / Mythic",[6]="Mythic",[7]="Secret",
-}
-local RarityColor = {
-    Common=0x95A5A6, Uncommon=0x2ECC71, Rare=0x3498DB, Epic=0x9B59B6,
-    Legendary=0xF1C40F, Mythic=0xE67E22, Secret=0xE74C3C
-}
-
-local _fishCache = {}  
-
-local function _extractAssetId(s)
-    if type(s)~="string" then return nil end
-    return s:match("rbxassetid://(%d+)") or s:match("(%d+)$")
-end
-
-local function _thumbFromAssetId(assetStr)
-    local id = _extractAssetId(assetStr)
-    if not id then return nil end
-    local ok, res = pcall(function()
-        local url = ("https://thumbnails.roblox.com/v1/assets?assetIds=%s&size=420x420&format=Png&isCircular=false"):format(id)
-        local raw = game:HttpGet(url)
-        return HttpService:JSONDecode(raw)
-    end)
-    if ok and res and res.data and res.data[1] and res.data[1].imageUrl then
-        return res.data[1].imageUrl
-    end
-    return nil
-end
-
-local function resolveFishInfoByName(name)
-    if not name or name=="" then return nil end
-    local key = _norm(name)
-    if _fishCache[key] then return _fishCache[key] end
-
-    local Items = ReplicatedStorage:FindFirstChild("Items")
-    if not Items then return nil end
-
-    local found
-    for _, ms in ipairs(Items:GetDescendants()) do
-        if ms:IsA("ModuleScript") then
-            local ok, mod = pcall(require, ms)
-            if ok and type(mod)=="table" then
-                local d = mod.Data or mod.data or mod
-                if d and d.Name and _norm(d.Name)==key then
-                    local rarity = (d.Tier and TierMap[d.Tier]) or "(unknown)"
-                    found = {
-                        name = d.Name,
-                        rarity = rarity,
-                        iconUrl = d.Icon and _thumbFromAssetId(d.Icon) or nil, -- KONVERSI rbxassetid -> thumbnail URL
-                    }
-                    break
-                end
-            end
-        end
-    end
-
-    _fishCache[key] = found
-    return found
-end
-
-local function _passRarityFilter(r)
-    local set = WebhookState._raritySet
-    if not set or next(set) == nil then return true end
-    return set[_normR(r)] == true
-end
-
-local AUTHOR_ICON = "https://cdn.discordapp.com/attachments/1412614172302381106/1412899628629758122/B43515AA-FBA7-4D37-B830-5C531B5A0158.png?ex=68b9f8d1&is=68b8a751&hm=8fe9bfd14168ce1f09becd02b388734f2a257f726afbde62ecc9a9f18d0e7c2e"
-
-local Stats = { counts = {}, dirty = false }
-
-local function Stats_Add(name, n)
-    name = tostring(name or ""):gsub("^%s+",""):gsub("%s+$","")
-    if name == "" then return end
-    Stats.counts[name] = (Stats.counts[name] or 0) + (n or 1)
-    Stats.dirty = true
-end
-local function Stats_Reset()
-    for k in pairs(Stats.counts) do Stats.counts[k] = nil end
-    Stats.dirty = true
-end
-
--- SECTION di tab Webhook
-local PlayerStatsSection = WebhookTab:AddSection("Player Stats Webhook")
-
-WebhookState.statsUrl     = WebhookState.statsUrl     or ""
-WebhookState.statsEnabled = WebhookState.statsEnabled or false
-WebhookState.statsMsgId   = WebhookState.statsMsgId   or nil
-WebhookState.lastStats    = WebhookState.lastStats    or ""
-
-PlayerStatsSection:AddInput("StatsWebhookURL", {
-    Title = "Stats Webhook URL",
-    Placeholder = "Paste webhook link for Player Stats!",
-    Default = WebhookState.statsUrl or "",
-    Callback = function(text)
-        WebhookState.statsUrl = tostring(text or "")
-    end
-})
-
-PlayerStatsSection:AddToggle("StatsToggle", {
-    Title = "Enable Player Stats",
-    Description = "Edit one webhook message with your fish list",
-    Default = WebhookState.statsEnabled or false,
-    Callback = function(on)
-        WebhookState.statsEnabled = not not on
-    end
-})
-
-PlayerStatsSection:AddButton({
-    Title = "Reset Stats",
-    Description = "Clear local fish counters (webhook will be updated)",
-    Callback = function()
-        Stats_Reset()
-    end
-})
-
--- waktu lokal aman
-local function _clockStr()
-    local ok, s = pcall(function() return os.date("%H:%M:%S") end)
-    return ok and s or "00:00:00"
-end
-
-
-local MUT_PREFIX = {
-    ["ghost"]=true, ["stone"]=true, ["gold"]=true,
-    ["albino"]=true, ["shiny"]=true, ["big"]=true, ["corrupt"]=true, ["radioactive"]=true,
-}
-local function baseNameForRarity(displayName)
-    local words = {}
-    for w in tostring(displayName or ""):gmatch("%S+") do table.insert(words, w) end
-    if #words == 0 then return displayName end
-    local first = words[1]:lower()
-    if MUT_PREFIX[first] and #words >= 2 then
-        table.remove(words, 1)
-        return table.concat(words, " ")
-    end
-    return displayName
-end
-
--- urutan prioritas rarity untuk section
-local RARITY_ORDER = { "Secret","Mythic","Legendary","Epic","Rare","Common","Uncommon" }
-local RARITY_INDEX = {}
-for i, r in ipairs(RARITY_ORDER) do RARITY_INDEX[r] = i end
-
--- build embeds: grouped by rarity (bold), hanya show rarity yang ada
-local function buildStatsEmbeds_fromCounts()
-    local groups = {}
-    local any = false
-
-    for dispName, n in pairs(Stats.counts) do
-        local base = baseNameForRarity(dispName)
-        local info = resolveFishInfoByName(base)
-        local rarity = (info and info.rarity) or "(unknown)"
-        if rarity == "Legendary" then rarity = "Mythic" end
-
-        if RARITY_INDEX[rarity] then
-            any = true
-            groups[rarity] = groups[rarity] or {}
-            table.insert(groups[rarity], string.format("- %s x%d", dispName, tonumber(n) or 0))
-        end
-    end
-
-    local embeds = {{
-        author = { name = "LimitHub", icon_url = AUTHOR_ICON },
-        title  = "LimitHub - Static Player",
-        description = string.format("Player Name : ||%s||", LocalPlayer.Name),
-        color  = 0x00BFFF,
-        thumbnail = { url = AUTHOR_ICON },
-        footer = { text = string.format("discord.gg/limithub • Last update %s", _clockStr()) },
-        timestamp = DateTime.now():ToIsoDate()
-    }}
-    if not any then return embeds end
-
-    local sections = {}
-    for _, rarity in ipairs(RARITY_ORDER) do
-        local list = groups[rarity]
-        if list and #list > 0 then
-            table.sort(list)
-            table.insert(sections, string.format("**%s** :\n%s", rarity, table.concat(list, "\n")))
-        end
-    end
-    local desc = table.concat(sections, "\n\n")
-
-    local MAX = 1800
-    local function splitText(t, maxlen)
-        local parts = {}
-        while #t > maxlen do
-            local cut = t:sub(1, maxlen)
-            local p = cut:match("^(.*)\n") or cut
-            table.insert(parts, p)
-            t = t:sub(#p + 2)
-        end
-        if #t > 0 then table.insert(parts, t) end
-        return parts
-    end
-
-    local chunks = splitText(desc, MAX)
-    for i, chunk in ipairs(chunks) do
-        table.insert(embeds, {
-            description = chunk,
-            color = 0x00BFFF,
-            thumbnail = { url = AUTHOR_ICON },
-            footer = { text = string.format("discord.gg/limithub • Last update %s%s",
-                      _clockStr(), (#chunks>1 and (" • Page "..i.."/"..#chunks) or "")) },
-            timestamp = DateTime.now():ToIsoDate()
-        })
-    end
-
-    return embeds
-end
-
-local function updateStatsWebhook_fromCounts()
-    if not WebhookState.statsEnabled or WebhookState.statsUrl == "" then return end
-
-    local embeds  = buildStatsEmbeds_fromCounts()
-    local payload = HttpService:JSONEncode({ embeds = embeds })
-
-    if payload == WebhookState.lastStats then return end
-    WebhookState.lastStats = payload
-
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    if not req then return end
-
-    pcall(function()
-        if WebhookState.statsMsgId then
-            local editUrl = WebhookState.statsUrl .. "/messages/" .. WebhookState.statsMsgId
-            req({ Url = editUrl, Method = "PATCH", Headers = {["Content-Type"]="application/json"}, Body = payload })
-        else
-            local res = req({
-                Url = WebhookState.statsUrl .. "?wait=true",
-                Method = "POST",
-                Headers = {["Content-Type"]="application/json"},
-                Body = payload
-            })
-            if res and res.Body then
-                local ok, json = pcall(function() return HttpService:JSONDecode(res.Body) end)
-                if ok and json and json.id then WebhookState.statsMsgId = json.id end
-            end
-        end
-    end)
-end
-
-task.spawn(function()
-    while true do
-        task.wait(4)
-        if Stats.dirty then
-            Stats.dirty = false
-            updateStatsWebhook_fromCounts()
-        end
-    end
-end)
-
-local function sendCatchEmbedOnce(fishName, oddsText, weightNumber)
-    local displayName = tostring(fishName or "")
-    local base = baseNameForRarity(displayName)
-    local info = resolveFishInfoByName(base)
-
-    Stats_Add(displayName, 1)
-
-    local effectiveRarity = (info and info.rarity) or "(unknown)"
-    if effectiveRarity == "Legendary / Mythic" then effectiveRarity = "Legendary" end
-    if not _passRarityFilter(effectiveRarity) then return end
-
-    if not (WebhookState.enabled and type(WebhookState.url)=="string" and #WebhookState.url>0) then return end
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-    if not req then return end
-
-    local fields = {}
-    if oddsText then table.insert(fields, { name="Odds", value=tostring(oddsText), inline=true }) end
-    if weightNumber then table.insert(fields, { name="Weight", value=string.format("%.2f kg", weightNumber), inline=true }) end
-
-    local embed = {
-        author = { name = "LimitHub", icon_url = AUTHOR_ICON },
-        title = displayName,
-        description = effectiveRarity,
-        color = RarityColor[effectiveRarity] or 0x3498DB,
-        fields = (#fields>0) and fields or nil,
-        footer = { text = "discord.gg/limithub" },
-        timestamp = DateTime.now():ToIsoDate()
-    }
-    if info and info.iconUrl then
-        embed.thumbnail = { url = info.iconUrl }
-    end
-
-    pcall(function()
-        req({
-            Url = WebhookState.url,
-            Method = "POST",
-            Headers = {["Content-Type"]="application/json"},
-            Body = HttpService:JSONEncode({ content = "", embeds = { embed } })
-        })
-    end)
-end
-
 SettingsSection:AddButton({ Title = "Rejoin Server", Description = "Rejoin the current server", Callback = Rejoin })
 SettingsSection:AddButton({ Title = "Server Hop (New Server)", Description = "Hop to a new server", Callback = ServerHop })
 
+--// Services
+local Players           = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace         = game:GetService("Workspace")
+local LocalPlayer       = Players.LocalPlayer
+
+Options = Options or getgenv().Options or {}
+Toggles = Toggles or getgenv().Toggles or {}
+
+-- UI root
+TradeSection = Tabs.Trade:AddSection("Auto Trade")
+
+-- State
+local tradeSet = {
+	selectedPlayerName = nil,
+	selectedPlayerId   = nil,
+	selectedItemName   = nil,
+	itemQty            = 0,
+	autoTradeStart     = false,
+}
+
+-- Status
+tradeStatus = TradeSection:AddParagraph({ Title = "Status", Desc = "Waiting to start trade..." })
+
+-- Loader
+local ItemStringUtility, localReplion, localItemUtility
+local modulesLoaded = false
+local function loadModulesWithRetry(maxWait)
+	local deadline = os.clock() + (maxWait or 6)
+	while os.clock() < deadline and not modulesLoaded do
+		local ok = pcall(function()
+			localReplion      = require(ReplicatedStorage.Packages:WaitForChild("Replion", 2))
+			localItemUtility  = require(ReplicatedStorage.Shared:WaitForChild("ItemUtility", 2))
+			ItemStringUtility = require(ReplicatedStorage.Modules:WaitForChild("ItemStringUtility", 2))
+		end)
+		if ok and localReplion and localItemUtility and ItemStringUtility then
+			modulesLoaded = true
+			break
+		end
+		task.wait(0.4)
+	end
+	return modulesLoaded
+end
+if not loadModulesWithRetry(8) then
+	tradeStatus:SetDesc("⚠️ Failed to load Replion/Item modules.")
+	return
+end
+
+-- Helpers
+local function getPlayerList()
+	local names = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer then table.insert(names, p.Name) end
+	end
+	table.sort(names)
+	return names
+end
+local function filterRegex(s)
+	if type(s) == "table" then s = s[1] end
+	if type(s) ~= "string" then return nil end
+	return s:match("^(.-)%s*%(%d+x%)$") or s:match("^(.-)%s*%(%s*Qty%s*:%s*%d+%s*%)$") or s
+end
+local function getQty(itemData)
+	if not itemData then return 1 end
+	local n = itemData.Amount or itemData.amount
+	      or itemData.Quantity or itemData.quantity
+	      or itemData.Count or itemData.count
+	      or itemData.Stack or itemData.stack
+	      or itemData.Qty or itemData.qty
+	n = tonumber(n)
+	return (n and n > 0) and n or 1
+end
+local function stripQtySuffix(s)
+	s = tostring(s or "")
+	return s:match("^(.-)%s*%(%s*Qty%s*:%s*%d+%s*%)$") or s:match("^(.-)%s*%(%d+x%)$") or s
+end
+
+-- Caches
+inventoryCache = inventoryCache or {}
+local inventoryDropdownList = {}
+
+-- === BUAT DROPDOWN + SIMPAN REFERENSINYA ===
 do
-    local LP = Players.LocalPlayer
-    local PG2 = LP:WaitForChild("PlayerGui")
-    local hooked      = setmetatable({}, {__mode = "k"})
-    local lastLogAt   = setmetatable({}, {__mode = "k"})
+	local obj = TradeSection:AddDropdown("InventorySelect", {
+		Title       = "Select Fish from Backpack",
+		Description = "Only unfavorited Fishes & Enchant Stones listed",
+		Values      = {},
+		Default     = nil,
+		Multi       = false,
+		Callback    = function(val) tradeSet.selectedItemName = val end
+	})
+	Options.InventorySelect = obj
+end
 
-    local function clean(s)
-        if not s then return "" end
-        s = s:gsub("[%z\1-\127\194-\244][\128-\191]*", function(ch) return (ch:byte() <= 127) and ch or "" end)
-        return (s:gsub("^%s+",""):gsub("%s+$",""))
-    end
+do
+	local obj = TradeSection:AddDropdown("TradeTarget", {
+		Title       = "Select Target",
+		Description = "Select player to trade with",
+		Values      = getPlayerList(),
+		Default     = nil,
+		Multi       = false,
+		Callback    = function(name)
+			tradeSet.selectedPlayerName = name
+			tradeSet.selectedPlayerId   = nil
+			local chars = Workspace:FindFirstChild("Characters")
+			local targetChar = chars and chars:FindFirstChild(name)
+			if targetChar then
+				local targetPlayer = Players:GetPlayerFromCharacter(targetChar)
+				if targetPlayer then tradeSet.selectedPlayerId = targetPlayer.UserId end
+			end
+		end
+	})
+	Options.TradeTarget = obj
+end
 
-    local function parseFishLine(s)
-        s = clean(s)
-        local name, kg = s:match("^(.-)%s*%(([%d%.]+)%s*kg%)$")
-        if name then return (name:gsub("%s+"," ")), tonumber(kg) end
-        return (s:gsub("%s+"," ")), nil
-    end
+-- Setter aman
+local function setDropdownValuesSafe(opt, values, clearSelection)
+	if not opt then return end
+	values = values or {}
 
-    local function findSiblingInfo(container)
-        local odds, fishLine
-        for _, d in ipairs(container:GetDescendants()) do
-            if d:IsA("TextLabel") then
-                local t = clean(d.Text or "")
-                if (not odds) and t:match("^(%d+)%s*in%s*(%d+)$") then odds = t:gsub("%s+"," ") end
-                if (not fishLine) and (t:match("%(([%d%.]+)%s*kg%)")) then fishLine = t end
+	if typeof(opt.SetValues) == "function" then
+		opt:SetValues(values)
+	elseif typeof(opt.Refresh) == "function" then
+		opt:Refresh(values)
+	else
+		opt.Values = values
+		if typeof(opt.Refresh) == "function" then opt:Refresh() end
+	end
+
+	if clearSelection and typeof(opt.SetValue) == "function" then
+		pcall(function() opt:SetValue(nil, true) end)
+	end
+end
+
+-- Refresh inventory
+function refreshInventory()
+	if not loadModulesWithRetry(6) then
+		tradeStatus:SetDesc("⚠️ Modules not ready.")
+		setDropdownValuesSafe(Options.InventorySelect, {}, true)
+		return
+	end
+
+	local okRep, DataRep = pcall(function() return localReplion.Client:WaitReplion("Data") end)
+	if not okRep or not DataRep then
+		tradeStatus:SetDesc("⚠️ Replion 'Data' not ready.")
+		setDropdownValuesSafe(Options.InventorySelect, {}, true)
+		return
+	end
+
+	local items = DataRep:Get({"Inventory", "Items"})
+	inventoryCache        = {}
+	inventoryDropdownList = {}
+
+	if not items then
+		tradeStatus:SetDesc("⚠️ Inventory empty or not replicated.")
+		setDropdownValuesSafe(Options.InventorySelect, {}, true)
+		return
+	end
+
+	local grouped = {}  -- cleanName -> total qty
+	for _, item in ipairs(items) do
+		local base = localItemUtility:GetItemData(item.Id)
+		if base and base.Data then
+			local t = base.Data.Type
+			if (t == "Fishes" or t == "EnchantStones") and not item.Favorited then
+				local dynName = ItemStringUtility.GetItemName(item, base)
+				local clean   = stripQtySuffix(dynName)
+				local qty     = getQty(item)
+
+				grouped[clean] = (grouped[clean] or 0) + qty
+
+				inventoryCache[clean] = inventoryCache[clean] or {}
+				for i = 1, qty do
+					table.insert(inventoryCache[clean], item.UUID) -- duplikat per-qty
+				end
+			end
+		end
+	end
+
+	for name, count in pairs(grouped) do
+		table.insert(inventoryDropdownList, string.format("%s (Qty : %d)", name, count))
+	end
+	table.sort(inventoryDropdownList)
+
+	setDropdownValuesSafe(Options.InventorySelect, inventoryDropdownList, true)
+	setDropdownValuesSafe(Options.TradeTarget, getPlayerList(), false)
+
+	tradeStatus:SetDesc(string.format("✅ Backpack loaded: %d entries", #inventoryDropdownList))
+end
+
+-- Button & auto init
+TradeSection:AddButton({
+	Title       = "Refresh Backpack",
+	Description = "Reload unfavorited fishes & enchant stones",
+	Callback    = function()
+		refreshInventory()
+		print("[Trade] Backpack refreshed.")
+	end
+})
+task.defer(refreshInventory)
+
+-- Input qty
+TradeSection:AddInput("TradeQty", {
+	Title       = "Quantity to Trade",
+	Description = "Enter quantity for selected item",
+	Placeholder = "5",
+	Default     = "",
+	Callback    = function(val) tradeSet.itemQty = tonumber(val) or 0 end
+})
+
+-- Keep player list fresh
+Players.PlayerAdded:Connect(function()
+	if Options.TradeTarget and not Options.TradeTarget.Opened then
+		setDropdownValuesSafe(Options.TradeTarget, getPlayerList(), false)
+	end
+end)
+Players.PlayerRemoving:Connect(function()
+	if Options.TradeTarget and not Options.TradeTarget.Opened then
+		setDropdownValuesSafe(Options.TradeTarget, getPlayerList(), false)
+	end
+end)
+
+-- Optional block noisy remote
+getgenv().oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+	local method = getnamecallmethod()
+	if method == "FireServer" and tostring(self) == "URE/UpdateOxygen" then
+		return nil
+	end
+	return getgenv().oldNamecall(self, ...)
+end))
+
+-- Start Trade
+TradeSection:AddToggle("StartTrade", {
+	Title   = "Start Trade!",
+	Default = false,
+	Callback = function(on)
+		tradeSet.autoTradeStart = on
+		if not on then
+			tradeStatus:SetDesc("Trade stopped.")
+			return
+		end
+
+		task.spawn(function()
+			local chars      = Workspace:FindFirstChild("Characters")
+			local targetChar = chars and chars:FindFirstChild(tradeSet.selectedPlayerName)
+			local targetPlr  = targetChar and Players:GetPlayerFromCharacter(targetChar)
+			local hrp        = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+			local targetHRP  = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+
+			if not (targetPlr and targetHRP and hrp and tradeSet.selectedPlayerId) then
+				tradeStatus:SetDesc("Error: invalid target / position / ID.")
+				tradeSet.autoTradeStart = false
+				return
+			end
+
+			hrp.CFrame = targetHRP.CFrame
+			task.wait(0.4)
+
+			local selected    = tradeSet.selectedItemName
+			local cleanName   = filterRegex(selected) or selected
+			local uuidsToSend = inventoryCache[cleanName]
+
+			if not uuidsToSend or #uuidsToSend == 0 then
+				tradeStatus:SetDesc("No items found for " .. tostring(cleanName))
+				tradeSet.autoTradeStart = false
+				return
+			end
+			if tradeSet.itemQty <= 0 or #uuidsToSend < tradeSet.itemQty then
+				tradeStatus:SetDesc("Not enough items for " .. tostring(cleanName))
+				tradeSet.autoTradeStart = false
+				return
+			end
+
+			local netFolder = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("_Index")
+				:WaitForChild("sleitnick_net@0.2.0"):WaitForChild("net")
+			local RF = netFolder:WaitForChild("RF/InitiateTrade")
+
+			local successCount, failCount = 0, 0
+			for i = 1, tradeSet.itemQty do
+				if not tradeSet.autoTradeStart then
+					tradeStatus:SetDesc("Trade stopped.")
+					return
+				end
+				local uuid = uuidsToSend[i]
+				local ok, res = pcall(RF.InvokeServer, RF, tradeSet.selectedPlayerId, uuid)
+				if ok and res then successCount += 1 else failCount += 1 end
+				tradeStatus:SetDesc(string.format("[%s] Success: %d | Fail: %d", cleanName, successCount, failCount))
+				task.wait(3)
+			end
+
+			tradeStatus:SetDesc(string.format("✅ Complete. Success: %d | Failed: %d", successCount, failCount))
+			tradeSet.autoTradeStart = false
+			refreshInventory()
+		end)
+	end
+})
+
+local Players           = game:GetService("Players")
+local Workspace         = game:GetService("Workspace")
+local LocalPlayer       = Players.LocalPlayer
+
+local AutoArti = Tabs.Main:AddSection("Auto Artifact")
+
+-- // Replion loader
+local okRep, Replion = pcall(function()
+    return require(ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Replion"))
+end)
+if not okRep or not Replion then
+    AutoArti:AddParagraph({ Title = "Temple Artifact Progress", Desc = "⚠️ Replion not found." })
+    return
+end
+
+-- // Artifact Data
+local ArtifactIDs = {
+    ["Arrow Artifact"]             = 265,
+    ["Crescent Artifact"]          = 266,
+    ["Diamond Artifact"]           = 267,
+    ["Hourglass Diamond Artifact"] = 271,
+}
+
+local ArtifactSpots = {
+    ["Hourglass Diamond Artifact"] = CFrame.new(1500.73401, 6.62499952, -852.561646),
+    ["Diamond Artifact"]           = CFrame.new(1833.32751, 4.84496784, -325.866364),
+    ["Arrow Artifact"]             = CFrame.new(879.856628, 5.12086105, -342.661469),
+    ["Crescent Artifact"]          = CFrame.new(1380.41638, 2.73220325, 115.727127),
+}
+
+-- // Remote (Safe path)
+local NetFolder = ReplicatedStorage:FindFirstChild("Packages")
+    and ReplicatedStorage.Packages:FindFirstChild("_Index")
+    and ReplicatedStorage.Packages._Index:FindFirstChild("sleitnick_net@0.2.0")
+    and ReplicatedStorage.Packages._Index["sleitnick_net@0.2.0"]:FindFirstChild("net")
+
+local RE_PlaceLever = NetFolder and NetFolder:FindFirstChild("RE/PlaceLeverItem")
+
+-- // Status paragraph
+local para = AutoArti:AddParagraph({
+    Title = "Temple Artifact Progress",
+    Desc  = "Loading..."
+})
+
+-- // Replion Data
+local function getReplionData()
+    local ok, data = pcall(function()
+        return Replion.Client:WaitReplion("Data", LocalPlayer)
+    end)
+    return ok and data or nil
+end
+
+local function readStatus()
+    local data = getReplionData()
+    if not data then return {}, {}, "Replion Data not ready." end
+
+    local templeLevers, inv = {}, {}
+    pcall(function() templeLevers = data:Get("TempleLevers") or {} end)
+    pcall(function() inv = data:Get({"Inventory","Items"}) or {} end)
+
+    local owned = {}
+    for _, item in ipairs(inv) do
+        for name, id in pairs(ArtifactIDs) do
+            if item.Id == id then
+                owned[name] = true
             end
-            if odds and fishLine then break end
         end
-        return odds, fishLine
     end
 
-    local function logOnce(container, name, kg, odds)
-        local now = os.clock()
-        local last = lastLogAt[container]
-        if last and now - last < 0.35 then return end
-        lastLogAt[container] = now
-        sendCatchEmbedOnce(tostring(name), odds, kg)
+    return templeLevers, owned, nil
+end
+
+-- // Build progress text
+local function buildText()
+    local levers, owned, err = readStatus()
+    if err then return "⚠️ "..err end
+
+    local lines = {}
+    for name,_ in pairs(ArtifactIDs) do
+        local placed = levers[name] and "⚙️" or "⛔"
+        local have   = owned[name] and "✅" or "❌"
+        table.insert(lines, string.format("%s %s  (%s Owned)", placed, name, have))
     end
 
-    local function tryAssembleFrom(container)
-        local odds, fishLine = findSiblingInfo(container)
-        if not fishLine then return end
-        local name, kg = parseFishLine(fishLine)
-        if not name or name == "" then return end
-        logOnce(container, name, kg, odds)
+    table.sort(lines)
+    local allPlaced = true
+    for name,_ in pairs(ArtifactIDs) do
+        if not levers[name] then allPlaced = false break end
     end
+    if allPlaced then
+        table.insert(lines, "\n✅ All levers placed successfully!")
+    end
+    return table.concat(lines, "\n")
+end
 
-    local function hookLabel(lbl)
-        if hooked[lbl] then return end
-        hooked[lbl] = true
-        local function onChange()
-            local t = clean(lbl.Text or "")
-            if t == "" then return end
-            if t:match("^(%d+)%s*in%s*(%d+)$") then tryAssembleFrom(lbl.Parent or lbl); return end
-            if t:match("%(([%d%.]+)%s*kg%)") then tryAssembleFrom(lbl.Parent or lbl); return end
-            if t:find("^%s*You%s*got") then task.delay(0.06, function() tryAssembleFrom(lbl.Parent or lbl) end) end
+-- // Teleport safely
+local function safeTeleport(cf)
+    local char = LocalPlayer.Character
+    if not (char and cf) then return false end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return false end
+    hrp.CFrame = cf
+    task.wait(0.4)
+    return true
+end
+
+-- // Find next task (teleport or place)
+local function pickNextTask()
+    local levers, owned = readStatus()
+
+    for name,_ in pairs(ArtifactIDs) do
+        if not owned[name] then
+            return "teleport", name
         end
-        onChange()
-        lbl:GetPropertyChangedSignal("Text"):Connect(onChange)
     end
 
-    for _, d in ipairs(PG2:GetDescendants()) do if d:IsA("TextLabel") then hookLabel(d) end end
-    PG2.DescendantAdded:Connect(function(obj) if obj:IsA("TextLabel") then hookLabel(obj) end end)
+    for name,_ in pairs(ArtifactIDs) do
+        if owned[name] and not levers[name] then
+            return "place", name
+        end
+    end
+
+    return "done", nil
+end
+
+-- // Update paragraph initially
+para:SetDesc(buildText())
+
+-- // Buttons
+AutoArti:AddButton({
+    Title = "Refresh Status",
+    Description = "Manually refresh your artifact progress.",
+    Callback = function()
+        para:SetDesc(buildText())
+    end
+})
+
+AutoArti:AddButton({
+    Title = "Teleport to Next Artifact",
+    Description = "Teleport to the next missing artifact location (safe).",
+    Callback = function()
+        local action, name = pickNextTask()
+        if action ~= "teleport" then
+            para:SetDesc(buildText().."\n\nℹ️ No missing artifact to farm.")
+            return
+        end
+        local cf = ArtifactSpots[name]
+        if not cf then
+            para:SetDesc(buildText().."\n\n⚠️ Location not found for: "..name)
+            return
+        end
+        local ok = safeTeleport(cf)
+        if ok then
+            para:SetDesc(buildText().."\n\n🚀 Teleported to: "..name)
+        else
+            para:SetDesc(buildText().."\n\n⚠️ Teleport failed (missing HRP).")
+        end
+    end
+})
+
+AutoArti:AddButton({
+    Title = "Place Next Lever",
+    Description = "Places the next available lever for owned artifacts.",
+    Callback = function()
+        local action, name = pickNextTask()
+        if action ~= "place" then
+            para:SetDesc(buildText().."\n\nℹ️ No lever needs to be placed.")
+            return
+        end
+        if not RE_PlaceLever then
+            para:SetDesc(buildText().."\n\n⚠️ Remote 'RE/PlaceLeverItem' not found.")
+            return
+        end
+
+        pcall(function() RE_PlaceLever:FireServer(name) end)
+        task.wait(1.0)
+        para:SetDesc(buildText().."\n\n🔧 Lever placed for: "..name)
+    end
+})
+
+do
+    -- ==== use existing services/globals if present (no overrides) ====
+    local RS   = (replicatedStorage or game:GetService("ReplicatedStorage"))
+    local P    = (Players or game:GetService("Players"))
+    local LP   = (player or (P and P.LocalPlayer) or game:GetService("Players").LocalPlayer)
+    local WS   = (Workspace or game:GetService("Workspace"))
+
+    -- ==== LimitHub UI section (does not redeclare Tabs/Main) ====
+    local AutoArti = Tabs.Main:AddSection("Auto Artifact")
+
+    -- ==== Replion (reuse your Client if already required) ====
+    local ReplionClient
+    do
+        local ok, mod = pcall(function()
+            if Client and Client.WaitReplion then
+                return Client -- your existing Replion client
+            end
+            return require(RS:WaitForChild("Packages"):WaitForChild("Replion")).Client
+        end)
+        if ok and mod then ReplionClient = mod end
+    end
+
+    -- If Replion is missing, bail safely
+    if not ReplionClient then
+        AutoArti:AddParagraph({ Title = "Temple Artifact Progress", Desc = "⚠️ Replion client not found." })
+        return
+    end
+
+    -- ==== artifact id + positions (no globals) ====
+    local ArtifactIDs = {
+        ["Arrow Artifact"]             = 265,
+        ["Crescent Artifact"]          = 266,
+        ["Diamond Artifact"]           = 267,
+        ["Hourglass Diamond Artifact"] = 271,
+    }
+
+    local ArtifactSpots = {
+        ["Hourglass Diamond Artifact"] = CFrame.new(1500.73401, 6.62499952, -852.561646),
+        ["Diamond Artifact"]           = CFrame.new(1833.32751, 4.84496784, -325.866364),
+        ["Arrow Artifact"]             = CFrame.new(879.856628, 5.12086105, -342.661469),
+        ["Crescent Artifact"]          = CFrame.new(1380.41638, 2.73220325, 115.727127),
+    }
+
+    -- ==== remotes (own table; never touches your global Remotes) ====
+    local ArtiRemotes = {}
+    do
+        local netFolder = RS:FindFirstChild("Packages")
+            and RS.Packages:FindFirstChild("_Index")
+            and RS.Packages._Index:FindFirstChild("sleitnick_net@0.2.0")
+            and RS.Packages._Index["sleitnick_net@0.2.0"]:FindFirstChild("net")
+
+        if netFolder then
+            ArtiRemotes.PlaceLever = netFolder:FindFirstChild("RE/PlaceLeverItem")
+        end
+    end
+
+    -- ==== status paragraph (UI-safe) ====
+    local para = AutoArti:AddParagraph({
+        Title = "Temple Artifact Progress",
+        Desc  = "Loading..."
+    })
+
+    -- ==== helpers ====
+    local function getData()
+        local ok, data = pcall(function()
+            return ReplionClient:WaitReplion("Data", LP)
+        end)
+        return ok and data or nil
+    end
+
+    local function readStatus()
+        local data = getData()
+        if not data then return {}, {}, "Data replion not ready" end
+
+        local levers = {}
+        local inv    = {}
+
+        pcall(function() levers = data:Get("TempleLevers") or {} end)
+        pcall(function() inv    = data:Get({"Inventory","Items"}) or {} end)
+
+        local owned = {}
+        for _, item in ipairs(inv) do
+            for name, id in pairs(ArtifactIDs) do
+                if item.Id == id then
+                    owned[name] = true
+                end
+            end
+        end
+        return levers, owned, nil
+    end
+
+    local function buildText()
+        local levers, owned, err = readStatus()
+        if err then return "⚠️ "..err end
+
+        local lines = {}
+        for name,_ in pairs(ArtifactIDs) do
+            local placed = levers[name] and "⚙️" or "⛔"
+            local have   = owned[name]   and "✅" or "❌"
+            table.insert(lines, string.format("%s %s  (%s Owned)", placed, name, have))
+        end
+        table.sort(lines)
+
+        local allPlaced = true
+        for name,_ in pairs(ArtifactIDs) do
+            if not levers[name] then allPlaced = false break end
+        end
+        if allPlaced then table.insert(lines, "\n✅ All levers placed!") end
+
+        return table.concat(lines, "\n")
+    end
+
+    local function safeTeleport(cf)
+        local char = LP and LP.Character
+        local hrp  = char and char:FindFirstChild("HumanoidRootPart")
+        if not (hrp and cf) then return false end
+        hrp.CFrame = cf
+        task.wait(0.4)
+        return true
+    end
+
+    local function nextTask()
+        local levers, owned = readStatus()
+
+        for name,_ in pairs(ArtifactIDs) do
+            if not owned[name] then
+                return "teleport", name
+            end
+        end
+        for name,_ in pairs(ArtifactIDs) do
+            if owned[name] and not levers[name] then
+                return "place", name
+            end
+        end
+        return "done", nil
+    end
+
+    -- initial render
+    para:SetDesc(buildText())
+
+    -- ==== buttons (no loops, safe delays) ====
+    AutoArti:AddButton({
+        Title = "Refresh Status",
+        Description = "Update the artifact progress text",
+        Callback = function()
+            para:SetDesc(buildText())
+        end
+    })
+
+    AutoArti:AddButton({
+        Title = "Teleport to Next Artifact",
+        Description = "Teleports you to the next missing artifact location",
+        Callback = function()
+            local action, name = nextTask()
+            if action ~= "teleport" then
+                para:SetDesc(buildText().."\n\nℹ️ No missing artifact to farm.")
+                return
+            end
+            local cf = ArtifactSpots[name]
+            if not cf then
+                para:SetDesc(buildText().."\n\n⚠️ Missing location for: "..name)
+                return
+            end
+            if safeTeleport(cf) then
+                para:SetDesc(buildText().."\n\n🚀 Teleported to: "..name)
+            else
+                para:SetDesc(buildText().."\n\n⚠️ Teleport failed (no HRP).")
+            end
+        end
+    })
+
+    AutoArti:AddButton({
+        Title = "Place Next Lever",
+        Description = "Places the lever for the next owned-but-unplaced artifact",
+        Callback = function()
+            local action, name = nextTask()
+            if action ~= "place" then
+                para:SetDesc(buildText().."\n\nℹ️ No lever needs placing.")
+                return
+            end
+            if not (ArtiRemotes and ArtiRemotes.PlaceLever) then
+                para:SetDesc(buildText().."\n\n⚠️ Remote 'RE/PlaceLeverItem' not found.")
+                return
+            end
+            pcall(function() ArtiRemotes.PlaceLever:FireServer(name) end)
+            task.wait(1.0)
+            para:SetDesc(buildText().."\n\n🔧 Lever placed for: "..name)
+        end
+    })
 end
