@@ -1,17 +1,17 @@
 local HttpService = game:GetService("HttpService")
 
-if not isfolder("Chloe X") then
-    makefolder("Chloe X")
+if not isfolder("Olympus") then
+    makefolder("Olympus")
 end
-if not isfolder("Chloe X/Config") then
-    makefolder("Chloe X/Config")
+if not isfolder("Olympus/Config") then
+    makefolder("Olympus/Config")
 end
 
 local gameName   = tostring(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name)
 gameName         = gameName:gsub("[^%w_ ]", "")
 gameName         = gameName:gsub("%s+", "_")
 
-local ConfigFile = "Chloe X/Config/Chloe_" .. gameName .. ".json"
+local ConfigFile = "Olympus/Config/Script" .. gameName .. ".json"
 
 ConfigData       = {}
 Elements         = {}
@@ -461,7 +461,7 @@ end
 
 function chloex(msg, delay, color, title, desc)
     return Chloex:MakeNotify({
-        Title = title or "Chloe X",
+        Title = title or "Olympus",
         Description = desc or "Notification",
         Content = msg or "Content",
         Color = color or Color3.fromRGB(0, 208, 255),
@@ -471,8 +471,8 @@ end
 
 function Chloex:Window(GuiConfig)
     GuiConfig              = GuiConfig or {}
-    GuiConfig.Title        = GuiConfig.Title or "Chloe X"
-    GuiConfig.Footer       = GuiConfig.Footer or "Chloee :3"
+    GuiConfig.Title        = GuiConfig.Title or "Olympus"
+    GuiConfig.Footer       = GuiConfig.Footer or "Olympus"
     GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(255, 0, 255)
     GuiConfig["Tab Width"] = GuiConfig["Tab Width"] or 120
     GuiConfig.Version      = GuiConfig.Version or 1
