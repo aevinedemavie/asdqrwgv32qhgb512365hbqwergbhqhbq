@@ -11,7 +11,7 @@ local gameName   = tostring(game:GetService("MarketplaceService"):GetProductInfo
 gameName         = gameName:gsub("[^%w_ ]", "")
 gameName         = gameName:gsub("%s+", "_")
 
-local ConfigFile = "Olympus/Config/Olympus_" .. gameName .. ".json"
+local ConfigFile = "Chloe X/Config/Chloe_" .. gameName .. ".json"
 
 ConfigData       = {}
 Elements         = {}
@@ -260,10 +260,10 @@ function CircleClick(Button, X, Y)
     end)
 end
 
-local Olympus = {}
-function Olympus:MakeNotify(NotifyConfig)
+local Chloex = {}
+function Chloex:MakeNotify(NotifyConfig)
     local NotifyConfig = NotifyConfig or {}
-    NotifyConfig.Title = NotifyConfig.Title or "Olympus"
+    NotifyConfig.Title = NotifyConfig.Title or "Chloe X"
     NotifyConfig.Description = NotifyConfig.Description or "Notification"
     NotifyConfig.Content = NotifyConfig.Content or "Content"
     NotifyConfig.Color = NotifyConfig.Color or Color3.fromRGB(255, 0, 255)
@@ -459,9 +459,9 @@ function Olympus:MakeNotify(NotifyConfig)
     return NotifyFunction
 end
 
-function Olympus(msg, delay, color, title, desc)
-    return Olympus:MakeNotify({
-        Title = title or "Olympus",
+function chloex(msg, delay, color, title, desc)
+    return Chloex:MakeNotify({
+        Title = title or "Chloe X",
         Description = desc or "Notification",
         Content = msg or "Content",
         Color = color or Color3.fromRGB(0, 208, 255),
@@ -469,10 +469,10 @@ function Olympus(msg, delay, color, title, desc)
     })
 end
 
-function Olympus:Window(GuiConfig)
+function Chloex:Window(GuiConfig)
     GuiConfig              = GuiConfig or {}
-    GuiConfig.Title        = GuiConfig.Title or "Olympus"
-    GuiConfig.Footer       = GuiConfig.Footer or "Olympuse :3"
+    GuiConfig.Title        = GuiConfig.Title or "Chloe X"
+    GuiConfig.Footer       = GuiConfig.Footer or "Chloee :3"
     GuiConfig.Color        = GuiConfig.Color or Color3.fromRGB(255, 0, 255)
     GuiConfig["Tab Width"] = GuiConfig["Tab Width"] or 120
     GuiConfig.Version      = GuiConfig.Version or 1
@@ -482,7 +482,7 @@ function Olympus:Window(GuiConfig)
 
     local GuiFunc = {}
 
-    local Olympus = Instance.new("ScreenGui");
+    local Chloeex = Instance.new("ScreenGui");
     local DropShadowHolder = Instance.new("Frame");
     local DropShadow = Instance.new("ImageLabel");
     local Main = Instance.new("Frame");
@@ -505,10 +505,10 @@ function Olympus:Window(GuiConfig)
     local LayersFolder = Instance.new("Folder");
     local LayersPageLayout = Instance.new("UIPageLayout");
 
-    Olympus.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    Olympus.Name = "Olympus"
-    Olympus.ResetOnSpawn = false
-    Olympus.Parent = game:GetService("CoreGui")
+    Chloeex.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    Chloeex.Name = "Chloeex"
+    Chloeex.ResetOnSpawn = false
+    Chloeex.Parent = game:GetService("CoreGui")
 
     DropShadowHolder.BackgroundTransparency = 1
     DropShadowHolder.BorderSizePixel = 0
@@ -521,10 +521,10 @@ function Olympus:Window(GuiConfig)
     end
     DropShadowHolder.ZIndex = 0
     DropShadowHolder.Name = "DropShadowHolder"
-    DropShadowHolder.Parent = Olympus
+    DropShadowHolder.Parent = Chloeex
 
-    DropShadowHolder.Position = UDim2.new(0, (Olympus.AbsoluteSize.X // 2 - DropShadowHolder.Size.X.Offset // 2), 0,
-        (Olympus.AbsoluteSize.Y // 2 - DropShadowHolder.Size.Y.Offset // 2))
+    DropShadowHolder.Position = UDim2.new(0, (Chloeex.AbsoluteSize.X // 2 - DropShadowHolder.Size.X.Offset // 2), 0,
+        (Chloeex.AbsoluteSize.Y // 2 - DropShadowHolder.Size.Y.Offset // 2))
     DropShadow.Image = "rbxassetid://6015897843"
     DropShadow.ImageColor3 = Color3.fromRGB(15, 15, 15)
     DropShadow.ImageTransparency = 1
@@ -747,8 +747,8 @@ function Olympus:Window(GuiConfig)
     ScrollTab.ChildRemoved:Connect(UpdateSize1)
 
     function GuiFunc:DestroyGui()
-        if CoreGui:FindFirstChild("Olympus") then
-            Olympus:Destroy()
+        if CoreGui:FindFirstChild("Chloeex") then
+            Chloeex:Destroy()
         end
     end
 
@@ -805,7 +805,7 @@ function Olympus:Window(GuiConfig)
         Title.Position = UDim2.new(0, 0, 0, 4)
         Title.BackgroundTransparency = 1
         Title.Font = Enum.Font.GothamBold
-        Title.Text = "Olympus Window"
+        Title.Text = "Chloe X Window"
         Title.TextSize = 22
         Title.TextColor3 = Color3.fromRGB(255, 255, 255)
         Title.ZIndex = 52
@@ -854,7 +854,7 @@ function Olympus:Window(GuiConfig)
         Instance.new("UICorner", Cancel).CornerRadius = UDim.new(0, 6)
 
         Yes.MouseButton1Click:Connect(function()
-            if Olympus then Olympus:Destroy() end
+            if Chloeex then Chloeex:Destroy() end
             if game.CoreGui:FindFirstChild("ToggleUIButton") then
                 game.CoreGui.ToggleUIButton:Destroy()
             end
@@ -2706,4 +2706,4 @@ function Olympus:Window(GuiConfig)
     return Tabs
 end
 
-return Olympus
+return Chloex
