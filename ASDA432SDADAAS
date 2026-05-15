@@ -1578,15 +1578,19 @@ local function Sel(v)
     else
         if allowNone and selected==v then
             selected=nil Library.Flags[flag]=nil cb(nil)
-       else
-    expanded=false
-    local cnt=0 for _,b in pairs(optionButtons) do if b.Visible then cnt=cnt+1 end end
-    local ch=math.min(math.max(cnt,1),5)*30
-    TweenService:Create(fr,SMOOTH,{Size=UDim2.new(1,0,0,38)}):Play()
-    TweenService:Create(arr,SMOOTH,{Rotation=0}):Play()
-    if sectionUpdate then task.delay(0.05, sectionUpdate)
+        else
+            selected=v Library.Flags[flag]=v cb(v)
+            expanded=false
+            local cnt=0 for _,b in pairs(optionButtons) do if b.Visible then cnt=cnt+1 end end
+            local ch=math.min(math.max(cnt,1),5)*30
+            TweenService:Create(fr,SMOOTH,{Size=UDim2.new(1,0,0,38)}):Play()
+            TweenService:Create(arr,SMOOTH,{Rotation=0}):Play()
+            if sectionUpdate then task.delay(0.05, sectionUpdate) end
+        end
+    end
+    refreshVisualState()
 end
-end
+
 			local function CreateOption(v, i)
 				local opt=N("TextButton",{
 					Text="",
