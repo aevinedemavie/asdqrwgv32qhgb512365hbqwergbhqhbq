@@ -534,83 +534,81 @@ function Library:New(config)
 		Padding=UDim.new(0,8),
 		Parent=LeftGroup,
 	})
+if config.Logo then
+    local asset = tostring(config.Logo)
+    if not asset:find("rbxassetid://") then asset="rbxassetid://"..asset end
+    N("ImageLabel",{
+        Image=asset,
+        BackgroundTransparency=1,
+        ScaleType=Enum.ScaleType.Fit,
+        Size=UDim2.fromOffset(24,24),
+        ZIndex=12,
+        Parent=LeftGroup,
+    })
+end
 
-	if config.Badge then
-		local badgeW = config.Badge.Width or 140
-		local BadgePill = N("Frame",{
-			BackgroundColor3=C.GLASS2,
-			Size=UDim2.fromOffset(badgeW,24),
-			ZIndex=12,
-			BorderSizePixel=0,
-			Parent=LeftGroup,
-		})
-		Corner(12, BadgePill)
-		Stroke(C.BORDER,1,BadgePill)
-		local bx = 9
-		if config.Badge.Icon then
-			local ico = tostring(config.Badge.Icon)
-			if not ico:find("rbxassetid://") then ico="rbxassetid://"..ico end
-			N("ImageLabel",{
-				Image=ico,
-				BackgroundTransparency=1,
-				ScaleType=Enum.ScaleType.Fit,
-				Position=UDim2.fromOffset(7,5),
-				Size=UDim2.fromOffset(14,14),
-				ImageColor3=C.DISCORD,
-				ZIndex=13,
-				Parent=BadgePill,
-			})
-			bx = 26
-		end
-		N("TextLabel",{
-			Text=config.Badge.Text or "",
-			Font=Enum.Font.GothamBold,
-			TextSize=10,
-			TextColor3=C.TEXT_DIM,
-			TextXAlignment=Enum.TextXAlignment.Left,
-			BackgroundTransparency=1,
-			ZIndex=13,
-			Position=UDim2.fromOffset(bx,0),
-			Size=UDim2.new(1,-bx-6,1,0),
-			Parent=BadgePill,
-		})
-		if config.Badge.Link then
-			local link = config.Badge.Link
-			local hit = N("TextButton",{Text="",BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ZIndex=14,Parent=BadgePill})
-			Hover(hit,BadgePill,C.GLASS2,C.CARD_HOV)
-			hit.MouseButton1Click:Connect(function()
-				if setclipboard then setclipboard(link) self:Notify({Title="Link Copied", Content="Invite copied to clipboard.", Type="success", Time=3}) end
-			end)
-		end
-	end
+local titleText = config.Title or "Obsidia"
+local titleSize = TextService:GetTextSize(titleText, 17, Enum.Font.GothamBold, Vector2.new(999,999))
+N("TextLabel",{
+    Text=titleText,
+    Font=Enum.Font.GothamBold,
+    TextSize=17,
+    TextColor3=C.TEXT,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    BackgroundTransparency=1,
+    ZIndex=12,
+    Size=UDim2.fromOffset(titleSize.X+4, 46),
+    Parent=LeftGroup,
+})
 
-	if config.Logo then
-		local asset = tostring(config.Logo)
-		if not asset:find("rbxassetid://") then asset="rbxassetid://"..asset end
-		N("ImageLabel",{
-			Image=asset,
-			BackgroundTransparency=1,
-			ScaleType=Enum.ScaleType.Fit,
-			Size=UDim2.fromOffset(24,24),
-			ZIndex=12,
-			Parent=LeftGroup,
-		})
-	end
-
-	local titleText = config.Title or "Obsidia"
-	local titleSize = TextService:GetTextSize(titleText, 17, Enum.Font.GothamBold, Vector2.new(999,999))
-	N("TextLabel",{
-		Text=titleText,
-		Font=Enum.Font.GothamBold,
-		TextSize=17,
-		TextColor3=C.TEXT,
-		TextXAlignment=Enum.TextXAlignment.Left,
-		BackgroundTransparency=1,
-		ZIndex=12,
-		Size=UDim2.fromOffset(titleSize.X+4, 46),
-		Parent=LeftGroup,
-	})
-
+if config.Badge then
+    local badgeW = config.Badge.Width or 140
+    local BadgePill = N("Frame",{
+        BackgroundColor3=C.GLASS2,
+        Size=UDim2.fromOffset(badgeW,24),
+        ZIndex=12,
+        BorderSizePixel=0,
+        Parent=LeftGroup,
+    })
+    Corner(12, BadgePill)
+    Stroke(C.BORDER,1,BadgePill)
+    local bx = 9
+    if config.Badge.Icon then
+        local ico = tostring(config.Badge.Icon)
+        if not ico:find("rbxassetid://") then ico="rbxassetid://"..ico end
+        N("ImageLabel",{
+            Image=ico,
+            BackgroundTransparency=1,
+            ScaleType=Enum.ScaleType.Fit,
+            Position=UDim2.fromOffset(7,5),
+            Size=UDim2.fromOffset(14,14),
+            ImageColor3=C.DISCORD,
+            ZIndex=13,
+            Parent=BadgePill,
+        })
+        bx = 26
+    end
+    N("TextLabel",{
+        Text=config.Badge.Text or "",
+        Font=Enum.Font.GothamBold,
+        TextSize=10,
+        TextColor3=C.TEXT_DIM,
+        TextXAlignment=Enum.TextXAlignment.Left,
+        BackgroundTransparency=1,
+        ZIndex=13,
+        Position=UDim2.fromOffset(bx,0),
+        Size=UDim2.new(1,-bx-6,1,0),
+        Parent=BadgePill,
+    })
+    if config.Badge.Link then
+        local link = config.Badge.Link
+        local hit = N("TextButton",{Text="",BackgroundTransparency=1,Size=UDim2.fromScale(1,1),ZIndex=14,Parent=BadgePill})
+        Hover(hit,BadgePill,C.GLASS2,C.CARD_HOV)
+        hit.MouseButton1Click:Connect(function()
+            if setclipboard then setclipboard(link) self:Notify({Title="Link Copied", Content="Invite copied to clipboard.", Type="success", Time=3}) end
+        end)
+    end
+end
 	local function makeCtrlBtn(txt, posX)
 		local wrap = N("Frame",{
 			BackgroundColor3=C.GLASS2,
