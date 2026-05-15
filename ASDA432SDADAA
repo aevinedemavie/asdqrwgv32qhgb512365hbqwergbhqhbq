@@ -1481,7 +1481,7 @@ function Library:New(config)
 			end
 			local expanded=false
 
-			local fr=N("Frame",{Size=UDim2.new(1,0,0,38),BackgroundColor3=C.CARD,ClipsDescendants=false,BorderSizePixel=0,Parent=parent})
+			local fr=N("Frame",{Size=UDim2.new(1,0,0,38),BackgroundColor3=C.CARD,ClipsDescendants=true,BorderSizePixel=0,Parent=parent})
 			Corner(8,fr) Stroke(C.BORDER,1,fr)
 
 			local hdr=N("TextButton",{Text="",BackgroundTransparency=1,Size=UDim2.new(1,0,0,38),Parent=fr})
@@ -1578,18 +1578,15 @@ local function Sel(v)
     else
         if allowNone and selected==v then
             selected=nil Library.Flags[flag]=nil cb(nil)
-        else
-            selected=v Library.Flags[flag]=v cb(v)
-        end
-        expanded=false
-        local cnt=0 for _,b in pairs(optionButtons) do if b.Visible then cnt=cnt+1 end end
-        local ch=math.min(math.max(cnt,1),5)*30
-        TweenService:Create(fr,SMOOTH,{Size=UDim2.new(1,0,0,38)}):Play()
-        TweenService:Create(arr,SMOOTH,{Rotation=0}):Play()
-    end
-    refreshVisualState()
+       else
+    expanded=false
+    local cnt=0 for _,b in pairs(optionButtons) do if b.Visible then cnt=cnt+1 end end
+    local ch=math.min(math.max(cnt,1),5)*30
+    TweenService:Create(fr,SMOOTH,{Size=UDim2.new(1,0,0,38)}):Play()
+    TweenService:Create(arr,SMOOTH,{Rotation=0}):Play()
+    if sectionUpdate then task.delay(0.05, sectionUpdate)
 end
-
+end
 			local function CreateOption(v, i)
 				local opt=N("TextButton",{
 					Text="",
