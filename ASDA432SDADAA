@@ -536,9 +536,36 @@ function Library:New(config)
 	N("UIListLayout",{
 		FillDirection=Enum.FillDirection.Horizontal,
 		VerticalAlignment=Enum.VerticalAlignment.Center,
-		Padding=UDim.new(0,8),
+		Padding=UDim.new(0,6),
 		Parent=LeftGroup,
 	})
+if config.Logo then
+    local asset = tostring(config.Logo)
+    if not asset:find("rbxassetid://") then asset="rbxassetid://"..asset end
+    N("ImageLabel",{
+        Image=asset,
+        BackgroundTransparency=1,
+        ScaleType=Enum.ScaleType.Fit,
+        Size=UDim2.fromOffset(24,24),
+        ZIndex=12,
+        Parent=LeftGroup,
+    })
+end
+
+local titleText = config.Title or "Obsidia"
+local titleSize = TextService:GetTextSize(titleText, 17, Enum.Font.GothamBold, Vector2.new(999,999))
+N("TextLabel",{
+    Text=titleText,
+    Font=Enum.Font.GothamBold,
+    TextSize=17,
+    TextColor3=C.TEXT,
+    TextXAlignment=Enum.TextXAlignment.Left,
+    BackgroundTransparency=1,
+    ZIndex=12,
+    Size=UDim2.fromOffset(titleSize.X+4, 46),
+    Parent=LeftGroup,
+})
+
 if config.Badge then
     local badgeW = config.Badge.Width or 140
     local BadgePill = N("Frame",{
@@ -587,33 +614,6 @@ if config.Badge then
         end)
     end
 end
-
-if config.Logo then
-    local asset = tostring(config.Logo)
-    if not asset:find("rbxassetid://") then asset="rbxassetid://"..asset end
-    N("ImageLabel",{
-        Image=asset,
-        BackgroundTransparency=1,
-        ScaleType=Enum.ScaleType.Fit,
-        Size=UDim2.fromOffset(24,24),
-        ZIndex=12,
-        Parent=LeftGroup,
-    })
-end
-
-local titleText = config.Title or "Obsidia"
-local titleSize = TextService:GetTextSize(titleText, 17, Enum.Font.GothamBold, Vector2.new(999,999))
-N("TextLabel",{
-    Text=titleText,
-    Font=Enum.Font.GothamBold,
-    TextSize=17,
-    TextColor3=C.TEXT,
-    TextXAlignment=Enum.TextXAlignment.Left,
-    BackgroundTransparency=1,
-    ZIndex=12,
-    Size=UDim2.fromOffset(titleSize.X+4, 46),
-    Parent=LeftGroup,
-})
 
 	local function makeCtrlBtn(txt, posX)
 		local wrap = N("Frame",{
