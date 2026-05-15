@@ -1422,13 +1422,6 @@ end
 				Size=UDim2.fromScale(initPct,1),
 				BackgroundColor3=ACCENT,BorderSizePixel=0,Parent=track,
 			})
-			Corner(4,fill)
-			local knob2=N("Frame",{
-				AnchorPoint=Vector2.new(0.5,0.5),
-				Position=UDim2.fromScale(initPct,0.5),
-				Size=UDim2.fromOffset(13,13),
-				BackgroundColor3=C.WHITE,BorderSizePixel=0,ZIndex=3,Parent=track,
-			})
 			Corner(16,knob2)
 			Stroke(ACCENT,2,knob2)
 			local function rnd(n,f) return math.floor(n/f+0.5)*f end
