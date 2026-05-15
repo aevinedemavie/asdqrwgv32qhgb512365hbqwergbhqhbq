@@ -1,3 +1,8 @@
+local old = (gethui and gethui() or game:GetService("Players").LocalPlayer.PlayerGui):FindFirstChild("ObsidiaHub_UI")
+if old then old:Destroy() end
+local old2 = game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ObsidiaHub_Toggle")
+if old2 then old2:Destroy() end
+
 local UIS          = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local TextService  = game:GetService("TextService")
