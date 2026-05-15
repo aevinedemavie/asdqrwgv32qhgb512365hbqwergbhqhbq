@@ -1296,29 +1296,30 @@ function Library:New(config)
 			table.insert(Library._Search,{label=label,tab=name,widget=widget,wType=wType,flag=flag,switchFunc=switchHere})
 		end
 
-		local function BuildButton(parent, cfg2, isDanger)
-			local text=cfg2.Name or cfg2.Text or "Button"
-			local cb=cfg2.Callback or function() end
-			local danger = cfg2.Danger or isDanger
-			local fr=MakeCard(38,parent)
-			local btn=N("TextButton",{
-				Font=Enum.Font.GothamBold,Text=text,TextSize=11,
-				TextColor3=danger and Color3.fromRGB(255,180,180) or C.TEXT,
-				BackgroundColor3=danger and Color3.fromRGB(60,28,32) or C.BTN,
-				AutoButtonColor=false,BorderSizePixel=0,
-				Size=UDim2.new(1,-8,0,30),Position=UDim2.fromOffset(4,4),Parent=fr,
-			})
-			Corner(6,btn)
-			local normal = danger and Color3.fromRGB(60,28,32) or C.BTN
-			local hov = danger and Color3.fromRGB(80,38,42) or C.BTN_HOV
-			Hover(btn,btn,normal,hov) Press(btn,btn,normal,Color3.fromRGB(50,53,70))
-			btn.MouseButton1Click:Connect(cb)
-			RegSearch(text,"button",nil,nil)
-			local F={}
-			function F:Hide() fr.Visible=false end
-			function F:Show() fr.Visible=true end
-			return F
-		end
+local function BuildButton(parent, cfg2, isDanger)
+    local text = cfg2.Name or cfg2.Text or "Button"
+    local cb = cfg2.Callback or function() end
+    local danger = cfg2.Danger or isDanger
+    local fr = MakeCard(38, parent)
+    local btn = N("TextButton", {
+        Font = Enum.Font.GothamBold, Text = text, TextSize = 11,
+        TextColor3 = C.TEXT,
+        BackgroundColor3 = C.BTN,
+        AutoButtonColor = false, BorderSizePixel = 0,
+        Size = UDim2.new(1,-8,0,30), Position = UDim2.fromOffset(4,4), Parent = fr,
+    })
+    Corner(6, btn)
+    local normal = C.BTN
+    local hov = C.BTN_HOV
+    Hover(btn, btn, normal, hov)
+    Press(btn, btn, normal, Color3.fromRGB(50,53,70))
+    btn.MouseButton1Click:Connect(cb)
+    RegSearch(text, "button", nil, nil)
+    local F = {}
+    function F:Hide() fr.Visible = false end
+    function F:Show() fr.Visible = true end
+    return F
+end
 
 		function Tab:Button(cfg2) return BuildButton(Tab._Page, cfg2, cfg2.Danger) end
 
