@@ -1401,7 +1401,7 @@ end
 			local default=cfg2.Default or mn
 			if Library.Flags[flag]~=nil then default=Library.Flags[flag] end
 			if not cfg2.NoSave then Library.Flags[flag]=default end
-			local fr=MakeCard(46,parent)
+			local fr=N("Frame",{Size=UDim2.new(1,0,0,46),BackgroundColor3=C.CARD,BorderSizePixel=0,Parent=parent})Corner(8,fr)
 			N("TextLabel",{
 				Font=Enum.Font.GothamBold,Text=text,TextSize=12,TextColor3=C.TEXT,
 				TextXAlignment=Enum.TextXAlignment.Left,BackgroundTransparency=1,
