@@ -1567,23 +1567,28 @@ function Library:New(config)
 				updSubtitle()
 			end
 
-			local function Sel(v)
-				if isMulti then
-					if selected[v] then
-						selected[v]=nil
-					else
-						selected[v]=true
-					end
-					local sl={} for k in pairs(selected) do table.insert(sl,k) end Library.Flags[flag]=sl cb(sl)
-				else
-					if allowNone and selected==v then
-						selected=nil Library.Flags[flag]=nil cb(nil)
-					else
-						selected=v Library.Flags[flag]=v cb(v)
-					end
-				end
-				refreshVisualState()
-			end
+local function Sel(v)
+    if isMulti then
+        if selected[v] then
+            selected[v]=nil
+        else
+            selected[v]=true
+        end
+        local sl={} for k in pairs(selected) do table.insert(sl,k) end Library.Flags[flag]=sl cb(sl)
+    else
+        if allowNone and selected==v then
+            selected=nil Library.Flags[flag]=nil cb(nil)
+        else
+            selected=v Library.Flags[flag]=v cb(v)
+        end
+        expanded=false
+        local cnt=0 for _,b in pairs(optionButtons) do if b.Visible then cnt=cnt+1 end end
+        local ch=math.min(math.max(cnt,1),5)*30
+        TweenService:Create(fr,SMOOTH,{Size=UDim2.new(1,0,0,38)}):Play()
+        TweenService:Create(arr,SMOOTH,{Rotation=0}):Play()
+    end
+    refreshVisualState()
+end
 
 			local function CreateOption(v, i)
 				local opt=N("TextButton",{
